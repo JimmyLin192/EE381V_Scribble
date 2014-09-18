@@ -1,0 +1,280 @@
+\documentclass{beamer}
+\mode<presentation>
+\usepackage[latin1]{inputenc}
+\usepackage{hyperref}
+\usepackage{colortbl}
+\usepackage{algorithmic}
+\usepackage{times}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{epsfig}
+\usetheme{juanlespins}
+\usepackage{graphicx}
+\usepackage{bbm}
+
+\setbeamertemplate{navigation symbols}{} 
+\title[Large Scale Optimization]{EE 381V Large Scale Optimization: Lecture XX}
+\author[Sanghavi]{Prof. Sujay Sanghavi}
+\institute{The University of Texas at Austin\\ Scribes: XXX and YYY}
+\date{XXXX, 2014}
+
+
+
+
+\newcommand{\tr}{\text{Tr}}
+\newcommand{\be}{\begin{eqnarray}}
+\newcommand{\ee}{\end{eqnarray}}
+\newcommand{\n}{\nonumber}
+%\newcommand{\qed}{\hfill \blacksquare}
+
+%\renewcommand{\textfraction}{0}
+%\newtheorem{theorem}{Theorem}
+%\newtheorem{lemma}{Lemma}
+%\newtheorem{definition}{Definition}
+%\newtheorem{remark}{Remark}
+
+
+\begin{document}
+
+
+
+\begin{frame}
+\titlepage
+\end{frame}
+\begin{frame}
+\frametitle{Convex Sets}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\iffalse
+
+\begin{frame}
+\frametitle{Directed Graphical Models}
+\begin{columns}[c]
+\column{1.5in}
+\includegraphics[width=1.5in]{directed_GM.pdf}
+\column{1.5in}
+\includegraphics[width=1.5in]{undirected_GM.pdf}
+\end{columns}
+$$p(\mathbf{x}) = \prod_{a \in \mathcal{V}}{p\left(x_a|x_{\text{pa}(x_a)}\right)}$$
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Directed Graphical Models}
+\begin{columns}[c]
+\column{1.5in}
+\includegraphics[width=1.5in]{directed_GM.pdf}
+\column{1.5in}
+\includegraphics[width=1.5in]{undirected_GM.pdf}
+\end{columns}
+$$p(\mathbf{x}) = p(x_1)p(x_2|x_1)p(x_3|x_1)p(x_4|x_3)$$
+%\begin{itemize}
+%\item{Applications in finance, sociology, epidemiology, neuroscience and bioinformatics etc.}
+%\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Directed Graphical Models}
+\begin{columns}[c]
+\column{1.4in}
+\includegraphics[width=1.4in]{directed_GM.pdf}
+\column{1.4in}
+\includegraphics[width=1.4in]{undirected_GM.pdf}
+\end{columns}
+$$p(\mathbf{x}) = p(x_1)p(x_2|x_1)p(x_3|x_1)p(x_4|x_3)$$
+\begin{itemize}
+\item{Applications in finance, sociology, epidemiology, neuroscience, bioinformatics...}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Directed Graphical Models}
+\begin{columns}[c]
+\column{2.0in}
+\centering
+\includegraphics[width=1.5in]{impossibility_1.pdf}
+$$p(\mathbf{x}) = p(x_1)p(x_2|x_1)p(x_3|x_2)$$
+\column{2.0in}
+\centering
+\includegraphics[width=1.5in]{impossibility_2.pdf}
+$$p(\mathbf{x}) = p(x_3)p(x_2|x_3)p(x_1|x_2)$$
+\end{columns}
+\begin{figure}
+	\centering
+		\includegraphics[width=0.40\textwidth]{intervention.pdf}
+	%\caption{}
+	\label{fig:2}
+\end{figure}
+$$\widetilde{p}(\mathbf{x}) = p(x_1)\mathbbm{1}\{x_2\}p(x_3|x_2)$$
+\end{frame}
+
+
+%\section{Problem Statement}
+\begin{frame}
+\frametitle{Time Series DAG}
+\begin{figure}
+	\centering
+		\includegraphics[width=0.60\textwidth]{time_DAG1.pdf}
+	%\caption{}
+	\label{fig:2}
+\end{figure}
+\end{frame}
+
+\section{Problem Statement}
+\begin{frame}
+\frametitle{Time Series DAG}
+\begin{figure}
+	\centering
+		\includegraphics[width=0.60\textwidth]{time_DAG.pdf}
+	%\caption{}
+	\label{fig:2}
+\end{figure}
+\onslide<2->$$p\left(\mathbf{x}^t|\mathbf{x}^{t-1}\right) = \prod_{a \in \mathcal{V}}{p\left(x_a^{t}|x_a^{t-1}, x^{t-1}_{\text{pa}(x_a)}\right)}$$
+\end{frame}
+
+\begin{frame}
+\frametitle{Directional Conditional Entropy and DAG}
+\begin{itemize}
+\item Want to learn parent set of each node.
+\item $H(X_i|X_j)$ captures influence of $X_j$ on $X_i$.
+\item Influence of  $X^{t-1}_j$ on $X^{t}_i$ is of interest in time-series DAG.
+\item Conditional directional entropy: $H\left(X^t_i|X^{1,\ldots, t-1}_i, X^{1,\ldots, t}_j\right)$
+\item In our setting, this reduced to $H\left(X^t_i|X^{t-1}_i, X^{t-1}_j\right)$
+\end{itemize}
+%\onslide<2->$$p\left(\mathbf{x}^t|\mathbf{x}^{t-1}\right) = \prod_{a \in \mathcal{V}}{p\left(x_a^{t}|x_a^{t-1}, x^{t-1}_{\text{pa}(x_a)}\right)}$$
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Algorithm}
+\footnotesize
+\hline
+\begin{algorithmic}[1]
+\STATE Input: $\left\{\mathbf{x}^t\right\}_{t=1}^{n}$.
+\FOR{$a \in \mathcal{V}$} 
+\STATE $\widehat{\text{pa}}(x_a) \leftarrow \phi$%, {\color{red}\text{Rej} = \phi}.
+\WHILE{$\widehat{\text{pa}}(x_a)$ is growing}
+\STATE $k \in \arg \min_{j \in \mathcal{V}\backslash \widehat{\text{pa}}(x_a)}\widehat{H}(x^t_a|x^{t-1}_a, x^{t-1}_{\widehat{\text{pa}}(x_a)}, {\color{red}{x^{t-1}_j}})$
+\IF{$\widehat{H}(x^t_a|x^{t-1}_a, x^{t-1}_{\widehat{\text{pa}}(x_a)}, {\color{red}{x^{t-1}_j}}) < \widehat{H}(x^t_a|x^{t-1}_a, x^{t-1}_{\widehat{\text{pa}}(x_a)}) - \epsilon_2$}
+\STATE $\widehat{\text{pa}}(x_a) \leftarrow \widehat{\text{pa}}(x_a) \cup \{k\}$
+\ENDIF
+\ENDWHILE
+\ENDFOR
+\end{algorithmic}
+\vspace{0.1in}
+\hline
+\end{frame}
+
+\begin{frame}
+\frametitle{Assumptions on DAG}
+%\iffalse
+%\begin{figure}
+%	\centering
+%		%\includegraphics[width=0.75\textwidth]{}
+%	\caption{}
+%	\label{fig:1}
+%\end{figure}
+%\fi
+\begin{itemize}
+\item All possible transitions with positive probability $(> \gamma > 0)$.
+\item For all $A \subseteq \text{pa}(i)$, $$H(x^t_i|x^{t-1}_A, x^{t-1}_i, x^{t-1}_S) - H(x^t_i|x^{t-1}_A, x^{t-1}_i, x^{t-1}_S, x^{t-1}_j) > \epsilon_2$$ for $j \in Pa(i)$ and there exists no directed path between $S$ and $i$.
+%\item For any $i \in \mathcal{V}$, $$ H(x^t_i|x^{t-1}_A, x^{t-1}_i) > \epsilon' $$ for all $A \subset \mathcal{V} \backslash \{i\}$
+\item For all $A \subseteq \text{pa}(i)$ and $k \in \text{pa}(\text{pa}(i))$, $$ H(x^t_i|x^{t-1}_A, x^{t-1}_k) - H(x^t_i|x^{t-1}_A, x^{t-2}_k) > \epsilon_1 $$ for all $A \subset \mathcal{V} \backslash \{i\}$
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Grandparent Effect}
+\footnotesize
+\begin{figure}
+	\centering
+		\includegraphics[width=0.45\textwidth]{diamond.png}
+	%\caption{}
+	%\label{fig:2}
+\end{figure}
+$$p\left(x^{t}_{i}|x^{t-1}_{i}, x^{t-1}_{\text{pa}(x_i)}\right) = f(x^{t-1}_{i}, x^{t-1}_{\text{pa}(x_i)}) = g(x^{t-1}_{i}, x^{t-2}_k)$$
+\begin{itemize}
+\item If $x^{\cdot}_k$ is highly correlated across time, algorithm may pick $x_k$ as a member of pa$(x_i)$.
+\item Trace one step back and use the fact that $x^{t-1}_k = h(x_k^{t-2},\ldots)$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Algorithm}
+\footnotesize
+\hline
+\begin{algorithmic}[1]
+\STATE Input: $\left\{\mathbf{x}^t\right\}_{t=1}^{n}$.
+\FOR{$a \in \mathcal{V}$} 
+\STATE $\widehat{\text{pa}}(x_a) \leftarrow \phi$%, {\color{red}\text{Rej} = \phi}.
+\WHILE{$\widehat{\text{pa}}(x_a)$ is growing}
+\STATE {\tiny{{\color{blue}{$\mathcal{U} = \left\{j \in \mathcal{V}\backslash \{\widehat{\text{pa}}(x_a) \cup \{a\}\}:\widehat{H}(x^t_a|x^{t-1}_a, x^{t-1}_{\widehat{\text{pa}}(x_a)}, {\color{red}{x^{t-1}_j}})  <  \widehat{H}(x^t_a|x^{t-1}_a, x^{t-1}_{\widehat{\text{pa}}(x_a)},{\color{red}{x^{t-2}_j}})  - \epsilon_1\right\}$}}}}
+\STATE $k \in \arg \min_{{\color{blue}{j \in \mathcal{U}}}}\widehat{H}(x^t_a|x^{t-1}_a, x^{t-1}_{\widehat{\text{pa}}(x_a)}, {\color{red}{x^{t-1}_j}})$
+\IF{$\widehat{H}(x^t_a|x^{t-1}_a, x^{t-1}_{\widehat{\text{pa}}(x_a)}, {\color{red}{x^{t-1}_j}}) < \widehat{H}(x^t_a|x^{t-1}_a, x^{t-1}_{\widehat{\text{pa}}(x_a)}) - \epsilon_2$}
+\STATE $\widehat{\text{pa}}(x_a) \leftarrow \widehat{\text{pa}}(x_a) \cup \{k\}$
+\ENDIF
+\ENDWHILE
+\ENDFOR
+\end{algorithmic}
+\vspace{0.1in}
+\hline
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Why does this work with enough samples}
+\footnotesize
+\begin{itemize}
+\item Define 
+$$\left\|P - \widehat{P}\right\|_1 = \sum_{x \in \mathcal{X}}\left|P(x) - \widehat{P}(x)\right|$$
+\item We have
+$$\left\|H(P) - H(\widehat{P})\right\|_1 \leq -\left\|P - \widehat{P}\right\|_1\log \frac{\left\|P - \widehat{P}\right\|_1}{\left| \mathcal{X}\right|}$$
+\end{itemize}
+\begin{theorem}\textbf{Concentration Result for Markov Chains:}
+Let $X$ be a Markov Chain and $T$ be its $\delta-$mixing time $(\delta < 1/8)$. Let $X_1,\ldots, X_n$ be $n$ step random walk on $X$. Define $Z = \sum_{t=1}^{n}f(X_t)$. For $\delta \in [0,1]$ we have
+$$\mathbb{P}[Z \geq (1+\epsilon)\mu n] \leq C(\pi_{1})\exp \left(-\epsilon^{2}\mu n/(72T)\right)$$
+and
+$$\mathbb{P}[Z \leq (1-\epsilon)\mu n] \leq C(\pi_{1})\exp \left(-\epsilon^{2}\mu n/(72T)\right)$$
+\end{theorem}
+\end{frame}
+
+\section{Simulation Results}
+\begin{frame}
+\frametitle{Line graph}
+\begin{figure}
+	\centering
+		\includegraphics[width=0.75\textwidth]{line_graph.png}
+	%\caption{}
+	%\label{fig:2}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Line graph with Loop}
+\begin{figure}
+	\centering
+		\includegraphics[width=0.70\textwidth]{line_loop.png}
+	%\caption{}
+	%\label{fig:2}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Tree graph}
+\begin{figure}
+	\centering
+		\includegraphics[width=0.70\textwidth]{tree_graph.png}
+	%\caption{}
+	%\label{fig:2}
+\end{figure}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\fi
+
+\end{document}
