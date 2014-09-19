@@ -27,6 +27,7 @@
 \usepackage{graphicx}
 \usepackage{bbm}
 
+\setbeamertemplate{caption}[numbered]
 \setbeamertemplate{navigation symbols}{} 
 \title[Large Scale Optimization, Sanghavi, UT Austin]{EE 381V Large Scale Optimization: Lecture 07}
 \author[Sanghavi]{Prof. Sujay Sanghavi}
@@ -100,11 +101,16 @@ The Newton step, along with update rule, gives {\it Newton Method}
 \end{frame}
 
 \begin{frame}
-\frametitle{Interpretation I: Figure}
+\frametitle{Interpretation I}
 \framesubtitle{Minimizer of second-order Approximation}
 \begin{figure}
-\includegraphics[width=2in]{figure/minimizer.png}
-\caption{}
+\includegraphics[width=2.2in]{figure/minimizer.png}
+\caption{
+The function $f$ (shown solid) and its second-order approximation
+$\hat{f}$ at $x$ (dashed). The Newton step $\dx_{nt}$ is what must be added to $x$ to
+give the minimizer of $\hat{f}$.
+}
+\label{fig:1}
 \end{figure}
 \end{frame}
 
@@ -116,14 +122,21 @@ The Newton step, along with update rule, gives {\it Newton Method}
     \be
     || u ||_{\fhess} \triangleq \sqrt{u^T \fhess u}
     \ee
+    %%% TODO: add more comment
 \end{frame}
 
 \begin{frame}
-\frametitle{Interpretation II: Figure}
+\frametitle{Interpretation II}
 \framesubtitle{Steepest descent direction in Hessian norm}
 \begin{figure}
 \includegraphics[width=1.3in]{figure/steepest.png}
-\caption{}
+\caption{
+The dashed lines are level curves of a convex function. The ellipsoid shown
+(with solid line) is $\{x + v | v^T \fhess v \leq 1\}$. The arrow shows
+$-\fgrad$, the gradient descent direction. The Newton step $\dx_{nt}$ is the
+steepest descent direction in the norm $||\cdot ||_{\fhess}$.
+}
+\label{fig:2}
 \end{figure}
 \end{frame}
 
@@ -136,14 +149,21 @@ The Newton step, along with update rule, gives {\it Newton Method}
         \nabla f(x+v) \approxeq \fgrad + \fhess
     \ee
     Set RHS to zero gives newton update.
+    %%% TODO: add more comment
 \end{frame}
 
 \begin{frame}
-\frametitle{Interpretation III: Figure}
+\frametitle{Interpretation III}
 \framesubtitle{Solution of linearized optimality condition}
 \begin{figure}
-\includegraphics[width=2.2in]{figure/linear.png}
-\caption{}
+\includegraphics[width=2.5in]{figure/linear.png}
+\label{fig:3}
+\caption{
+The solid curve is the derivative $f'$ of the function $f$ shown in Figure
+\ref{fig:2}.
+$\hat{f'}$ is the linear approximation of $f'$ at $x$. The Newton step
+$\dx_{nt}$ is the difference between the root of $\hat{f'}$ and the point $x$.
+}
 \end{figure}
 \end{frame}
 
