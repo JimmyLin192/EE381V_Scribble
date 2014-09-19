@@ -45,6 +45,7 @@
 %\newtheorem{definition}{Definition}
 \newtheorem{remark}{Remark}
 \newtheorem{assumption}{Assumption}
+\DeclareMathOperator{\dom}{dom}
 
 \begin{document}
 
@@ -62,43 +63,88 @@
 \newcommand{\fhess}{\ensuremath{\nabla^2 f(x)}}
 \newcommand{\fhessinv}{\ensuremath{\nabla^2 f(x)^{-1}}}
 \newcommand{\xp}{\ensuremath{x^{+}}}
+\newcommand{\dx}{\ensuremath{\Delta x}}
 \begin{frame}
-\frametitle{Newton Method}
-\begin{definition}[Basic Idea and Update Rule]
-    Newton Method aims at minimizing a quadratic approximation of function
-    $f$.
+\frametitle{Newton Step}
+\begin{definition}
+    For $x \in \dom f,$ the vector 
     \be
-    f(x+v) = f(x) + \fgrad^T v + v^T \fhess v
+    \dx_{nt} = - \fhessinv \fgrad
     \ee
-    where RHS is minimized at direction
-    \be
-        v = - \fhessinv \fgrad
-    \ee
-    And the update rule for Newton Method is
-    \be 
-    \xp = x - t \fhessinv \fgrad
-    \ee
-    where $t$ is fixed step size for optimization.
+    is called {\it Newton step} for function $f(\cdot)$, at point $x$. 
 \end{definition}
+In terms of positive definiteness of $\fhess$, 
+\be
+    \fhess^T \dx_{nt} = -\fgrad^T \fhessinv \fgrad < 0
+\ee
+unless $\fgrad = 0$. So the Newton step is a descent direction unless $x$ is
+already optimal.
 \end{frame}
 
 \begin{frame}
-\frametitle{Other Interpretations}
-\begin{remark}[Relation to Steepest Descent Method]
-    Newton Method can be interpreted as 
+\frametitle{Interpretation I}
+\framesubtitle{Minimizer of second-order Approximation}
+    Second-order Tylor approximation $\hat{f}$ of $f$ at $x$ is
+    \be
+    \hat{f}(x+v) = f(x) + \fgrad^T v + v^T \fhess v
+    \ee
+    where RHS is minimized at direction
+    \be
+        v = - \fhessinv \fgrad = \dx_{nt} 
+    \ee
+The Newton step, along with update rule, gives {\it Newton Method}
+    \be 
+    \xp = x - t \fhessinv \fgrad
+    \ee
+    where $t$ is fixed step size.
+\end{frame}
+
+\begin{frame}
+\frametitle{Interpretation I: Figure}
+\framesubtitle{Minimizer of second-order Approximation}
+\begin{figure}
+\includegraphics[width=2in]{figure/minimizer.png}
+\caption{}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Interpretation II}
+\framesubtitle{Steepest descent direction in Hessian norm}
+    Newton step can be interpreted as 
     steepest descent method when the norm is defined as
     \be
     || u ||_{\fhess} \triangleq \sqrt{u^T \fhess u}
     \ee
-\end{remark}
-\begin{remark}[First-Order Approximation]
-    Newton Method can also be interpreted as 
+\end{frame}
+
+\begin{frame}
+\frametitle{Interpretation II: Figure}
+\framesubtitle{Steepest descent direction in Hessian norm}
+\begin{figure}
+\includegraphics[width=1.3in]{figure/steepest.png}
+\caption{}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Interpretation III}
+\framesubtitle{Solution of linearized optimality condition}
+    Newton step can also be interpreted as 
     to linear approximation over gradient $\fgrad$ around $x$.
     \be
         \nabla f(x+v) \approxeq \fgrad + \fhess
     \ee
     Set RHS to zero gives newton update.
-\end{remark}
+\end{frame}
+
+\begin{frame}
+\frametitle{Interpretation III: Figure}
+\framesubtitle{Solution of linearized optimality condition}
+\begin{figure}
+\includegraphics[width=2.2in]{figure/linear.png}
+\caption{}
+\end{figure}
 \end{frame}
 
 %TODO: put first-order approximation a single slide? 
@@ -109,16 +155,16 @@
 %\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Section TWO: Affine Invariance of Newton Method
+%% Section TWO: Affine Invariance of Newton step
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\yp}{\ensuremath{y^{+}}}
 \newcommand{\gradient}[3]{\ensuremath{\nabla_{#1} #2 (#3)}}
 \newcommand{\hessian}[3]{\ensuremath{\nabla^2_{#1} #2 (#3)}}
 \newcommand{\inv}{^{-1}}
 \begin{frame}
-\frametitle{Affine Invariance of Newton Method}
+\frametitle{Affine Invariance of Newton step}
 \begin{lemma}
-    Newton Method is affine invariant. 
+    Newton step is affine invariant. 
 \end{lemma}
 
 For example, let $g(y) = f(Ay)$, $\yp$ be newton update on function
@@ -129,8 +175,10 @@ Then if $x=Ay$, we have $\xp = A\yp$.
 \begin{remark}
     Affine Invariance indicates that Newton Method is vulnerable to the
     selection of coordinate system. 
-    Note thtat Gradient Descent Method is not affine invariance. This means
-    that bad coordinate choice may disable Gradient Descent Method.
+\end{remark}
+\begin{remark}
+    Gradient Descent Method is not affine invariance. This means
+    that bad coordinate choice may limit the power of Gradient Descent Method.
 \end{remark}
 \end{frame}
 
@@ -154,9 +202,12 @@ Then if $x=Ay$, we have $\xp = A\yp$.
     &=& \xp
     \ee
 \end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Section three: Newton Method
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Section THREE: Convergence Analysis of Newton Method
+%% Section Four: Convergence Analysis of Newton Method
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
     \frametitle{Convergence Analysis: Assumption}    
@@ -195,7 +246,7 @@ Then if $x=Ay$, we have $\xp = A\yp$.
                 \ee
         \end{itemize}
     \end{theorem}
-        Inequality \eqref{CA:Theorem:phraseA} has two implications: 
+        Inequality \eqref{CA:Theorem:phraseA} has three implications: 
         \begin{itemize}
             \item Every newton step with BTLS gets closer to global optima by
                 at least $\gamma$.
