@@ -6,9 +6,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% The main content of LECTURE 07 contains THREE SECTIONS. 
 %% Specifically,
-%%    ONE: definition and interpretations of Newton Method
-%%    TWO: Affine Invariance of Newton Method
-%%    THREE: Convergence Analysis of Newton Method
+%%    ONE: definition and interpretations of Newton step
+%%    TWO: Affine Invariance of Newton step
+%%    THREE: Algorithimic Description of Newton Method
+%%    THREE: Convergence Analysis of Newton Method/step
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Copyright (c), JIMMY, VUTHA, DAVID @ UT AUSTIN 2014
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -45,7 +46,6 @@
 %\newtheorem{lemma}{Lemma}
 %\newtheorem{definition}{Definition}
 \newtheorem{remark}{Remark}
-\newtheorem{assumption}{Assumption}
 \DeclareMathOperator{\dom}{dom}
 
 \begin{document}
@@ -222,10 +222,9 @@ Then if $x=Ay$, we have $x^{+} = Ay^{+}$.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
     \frametitle{Convergence Analysis: Assumption}    
-    \begin{assumption}
         Let $f(\cdot)$ be the function discussed for Convergence of Newton
-        Method. Both of following assumptions are what convergence analysis is
-        based on.
+        Method. Both of following assumptions are what convergence analysis
+        relies on.
         \begin{itemize}
             \item Function $f(\cdot)$ is strongly convex, such that
         \be
@@ -239,7 +238,6 @@ Then if $x=Ay$, we have $x^{+} = Ay^{+}$.
         Note that induced matrix norm $\| \cdot \|_2$ equals to the largest
         singluar value of inside matrix.
         \end{itemize}
-    \end{assumption}
 \end{frame}
 
 %% theorem for each phase and implication by each phase
@@ -282,68 +280,88 @@ Then if $x=Ay$, we have $x^{+} = Ay^{+}$.
     Implications:
     \begin{itemize}
     \item To achieve an accuracy of $\epsilon$, only $O(\log \log \epsilon)$ iterations are needed once in the quadratic phase.
-    \item Also, for strongly convex functions, $f(x) \to p*$ quadratically.
+    \item Also, for strongly convex functions, $f(x) \to p^{*}$ quadratically.
     \end{itemize}
 \end{frame}
 
 % TODO: proof of step size t = m/M satisfies the exit condition for BTLS
 \begin{frame}
-    \frametitle{Convergence Analysis: Proof Part (a)}    
+    \frametitle{Convergence Analysis: Proof of Part (a)}    
     \begin{lemma}[BTLS Damped Lemma]
         $t = \frac{m}{M}$ satisfies the exit condition of BTLS.
     \end{lemma}
-    Proof omitted because of space.  See p. 489-490 in Boyd.
-    \begin{lemma}[Damped Phase]
+    % Proof omitted because of space.  See p. 489-490 in Boyd.
+    \begin{lemma}[Damped Phase Lemma]
         If $\|\nabla f(x)\|_2 \geq \eta$, 
         then $f(x^{+}) - f(x) \leq -\gamma$, 
         where  $\gamma = \frac{\alpha \beta m}{M^2}\eta^2$
     \end{lemma}
 \end{frame}
 
+\begin{frame}
+    \frametitle{Convergence Analysis: BTLS Damped Lemma}    
+\begin{align}
+f(x^{+}) & = f(x-tH^{-1}g) \n \\
+& \le f(x) - tg^TH^{-1}g + \frac{M}{2}t^2g^TH^{-1}H^{-1}g \label{froma} \\
+& \le f(x) - tg^TH^{-1}g + \frac{M}{2m}t^2 g^T H^{-1}g \label{tob}\\
+& = f(x) -  \frac{m}{2M} g^T H^{-1}g  &&
+    \text{by setting $t=\frac{m}{M}$} \n \\
+    & \le f(x) - \alpha \frac{m}{M} g^T H^{-1}g && (\alpha < \frac{1}{2})
+\end{align}
+%Note that\footnote{Recall the definition of square root of a matrix. If A is positive definite then we can write $A=U \Lambda U^T$, where $U$ is unitary and $\Lambda$ is diagonal, and $A^{1/2}=U \Lambda^{1/2} U^T$. },
+Hence, $t = \frac{m}{M}$ satisfies the BTLS exit condition.
+
+Note that derivation from \eqref{froma} to \eqref{tob} is given by
+\be
+g^TH^{-1}H^{-1}g = g^TH^{-1/2}H^{-1}H^{-1/2}g \le \frac{1}{m} g^T H^{-1}g \n
+\ee
+
+\end{frame}
+
 % TODO: proof of inequality for (a) phase and show linear convergence
 % inequality
 \begin{frame}
-    \frametitle{Convergence Analysis: Lemma Damped Phase}    
+    \frametitle{Convergence Analysis: Damped Phase Lemma} 
 	\begin{align}
 	t &\leq \beta \frac{m}{M} \tag{BTLS Damped Lemma} \\
 	f(x^+) &\leq f(x) - \alpha\left(\beta \frac{m}{M} \right) g^T H^{-1} g \tag{BTLS condition} \\
 	&\leq f(x) - \alpha\left(\beta \frac{m}{M} \right) \left(\frac{1}{M}\|g\|_2^2 \right) \tag{$H^{-1} \preceq I/m$} \\
 	&= f(x) - \alpha\beta \frac{m}{M^2}\|g\|_2^2 \notag \\
-	&= f(x) - \underbrace{\alpha\beta \frac{m}{M^2} \eta^2}_{\gamma} \tag{Assumptions}
-	\end{align}  
-	\begin{align}
-	\implies f(x^+) - f(x) = - \gamma
+	&= f(x) - \underbrace{\alpha\beta \frac{m}{M^2} \eta^2}_{\gamma} \\
+	&\implies f(x^+) - f(x) = - \gamma
 	\end{align}
 \end{frame}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % TODO: proof of inequality for (b) phase
 \begin{frame}
     \frametitle{Convergence Analysis: Proof Part (b)}
     \begin{lemma}[BTLS Quad. Lemma]
         With the assumptions in (b), $t = 1$ satisfies the exit condition of BTLS.
     \end{lemma}
-    Proof omitted because of space.  See p. 490-491 in Boyd.
-    \begin{lemma}[Quad. Phase]
+    Proof of BTLS Quad. Lemma will come after the proof of the following Quad.
+    Phase Lemma.
+    % Proof omitted because of space.  See p. 490-491 in Boyd.
+    \begin{lemma}[Quad. Phase Lemma]
         If $\|\nabla f(x)\|_2 < \eta$, then 
         $ \frac{L}{2m^2} \|\gradient{}{f}{x^{+}}\|_2 \leq
                 \bigg(\frac{L}{2m^2} \|\nabla f(x)\|_2 \bigg)^2 $
     \end{lemma}
 
 \end{frame}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-    \frametitle{Convergence Analysis: Quad. Phase}
+    \frametitle{Convergence Analysis: Quad. Phase Lemma}
     \begin{align}
-    x^+ &= x - H^{-1}g \tag{BTLS Quad. Lemma} \\
+        \text{Let } x^+ &= x - H^{-1}g \tag{BTLS Quad. Lemma} \\
     \| \nabla f(x^{+})\|_2 &= \| \nabla f(x-H^{-1}g) - g + HH^{-1}g \|_2 \tag{Add zero} \\
 	&= \left\|\int_{0}^{1} \nabla^2 f(x-tH^{-1}g) (-H^{-1}g) + HH^{-1}g \mathrm{d}t \right\|_2 \tag{Fund. Theorem of Calculus} \\
 	&= \left\| \int_{0}^{1} (\nabla^2 f(x-tH^{-1}g) - H) (-H^{-1}g) \mathrm{d}t \right\|_2 \tag{Rearrange} \\
 	&\leq \int_{0}^{1} \left\| (\nabla^2 f(x-tH^{-1}g) - H)\right\|_2 \left\| (-H^{-1}g)\right\|_2 \mathrm{d}t  \tag{Triangle inequality of norms}
     \end{align}
 \end{frame}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-    \frametitle{Convergence Analysis: Quad. Phase}
+    \frametitle{Convergence Analysis: Quad. Phase Lemma}
     \begin{align}
     \| \nabla f(x^{+})\|_2 &\leq \int_{0}^{1} \left\| (\nabla^2 f(x-tH^{-1}g) - H)\right\|_2 \|H^{-1}g\|_2 \mathrm{d}t \notag \\
 	&\leq \int_{0}^{1} L \| \!\!-\!tH^{-1}g \|_2 \|H^{-1}g\|_2 \mathrm{d}t \tag{Liptschitz Continuity of Hessian} \\
@@ -353,6 +371,33 @@ Then if $x=Ay$, we have $x^{+} = Ay^{+}$.
 	\begin{align}
  	\implies \frac{L}{2m^2} \| \nabla f(x^{+})\|_2 &\leq \left( \frac{L}{2m^2} \|g\|_2 \right)^2
     \end{align}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+    \frametitle{Convergence Analysis: BTLS Quad. Lemma}
+    Now we show that $t = 1$ satisfies the exit condition of BTLS under the
+    assumption of (b).
+
+Setting $t=1$ we have,
+\be
+f(x+\Delta x_{\mathrm{nt}}) & \le& f(x) - \frac{1}{2} \lambda^2(x) + \frac{L}{6 m^{3/2}} \lambda^3(x)
+\\ & =& f(x) - \lambda^2(x) \left(\frac{1}{2}  - \frac{L\lambda(x)}{6 m^{3/2}} \right )
+\\ & =& f(x) + g^T \Delta x_{\mathrm{nt}} \left(\frac{1}{2}  - \frac{L\lambda(x)}{6 m^{3/2}} \right )
+\ee
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+Again using strong convexity, we have
+\begin{align}
+\lambda(x) = (g^T H^{-1} g )^{1/2} \le \frac{1}{m^{1/2}} \|g\|_2 < \frac{1}{m^{1/2}} \eta. 
+\end{align}
+where the last inequality follows from the assumption $\|g\|_2 < \eta $. 
+Hence if we choose $\alpha$ such that,
+\begin{align}
+\alpha & < \frac{1}{2}  - \frac{L\lambda(x)}{6 m^{3/2}} % <  \frac{1}{2}  - \frac{L}{6 m^{3/2}} \frac{1}{m^{1/2}} \|g\|_2
+\\ & < \frac{1}{2}  - \frac{L}{6 m^{2}}  \eta
+\end{align}
+then $t=1$ satisfies BTLS exit condition.
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
