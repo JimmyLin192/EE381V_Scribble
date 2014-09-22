@@ -67,8 +67,10 @@
     \be
     \Delta x_{nt} = - \nabla^2 f(x)^{-1} \nabla f(x)
     \ee
-    is called {\it Newton step} for function $f(\cdot)$, at point $x$. 
+    is called {\it Newton step} for function $f(\cdot)$ at point $x$. 
 \end{definition}
+    Note that $f(\cdot)$ should be twice differentiable. 
+
 In terms of positive definiteness of $\nabla^2 f(x)$, 
 \be
     \nabla f(x)^T \Delta x_{nt} = -\nabla f(x)^T \nabla^2 f(x)^{-1} \nabla f(x) < 0
@@ -112,25 +114,29 @@ give the minimizer of $\hat{f}$.
 \begin{frame}
 \frametitle{Interpretation II}
 \framesubtitle{Steepest descent direction in Hessian norm}
-    Newton step can be interpreted as 
-    steepest descent method when the norm is defined as
+    Newton step can also be interpreted as 
+    steepest descent direction when the norm is defined as
     \be
     \| u \|_{\nabla^2 f(x)} \triangleq \sqrt{u^T \nabla^2 f(x) u}
     \ee
-    %%% TODO: add more comment
+    Recall from our discussion over steepest descent method that 
+    $ P = \nabla^2 f(x)$ is a very good choice as norm $||\cdot||_P$ inselecting
+    steepest descent direction, when $x$ is near $x^{*}$. Around $x^{*}$, we have $\nabla^2
+    f(x) \approx \nabla^2 f(x^{*})$, which explains why the Newton step is a
+    very good choice of search direction. See Figure \ref{fig:2}.
 \end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \begin{frame}
 \frametitle{Interpretation II}
 \framesubtitle{Steepest descent direction in Hessian norm}
 \begin{figure}
 \includegraphics[width=1.3in]{figure/steepest.png}
-\caption{
+\caption{ 
 The dashed lines are level curves of a convex function. The ellipsoid shown
 (with solid line) is $\{x + v | v^T \nabla^2 f(x) v \leq 1\}$. The arrow shows
 $-\nabla f(x)$, the gradient descent direction. The Newton step $\Delta x_{nt}$ is the
-steepest descent direction in the norm $\|\cdot \|_{\nabla^2 f(x)}$.
-}
+steepest descent direction in the norm $\|\cdot \|_{\nabla^2 f(x)}$. 
+} 
 \label{fig:2}
 \end{figure}
 \end{frame}
@@ -141,12 +147,19 @@ steepest descent direction in the norm $\|\cdot \|_{\nabla^2 f(x)}$.
     Newton step can also be interpreted as 
     to linear approximation over gradient $\nabla f(x)$ around $x$.
     \be
-        \nabla f(x+v) \approxeq \nabla f(x) + \nabla^2 f(x) v
+        \nabla f(x+v) \approx \nabla f(x) + \nabla^2 f(x) v
     \ee
-    Set RHS to zero gives newton update.
+    Set RHS to zero gives Newton step $\Delta x_{nt}$
+    \be
+        v = - \nabla^2 f(x)^{-1} \nabla f(x) = \Delta x_{nt} 
+    \ee
     %%% TODO: add more comment
+    So the Newton step $\Delta x_{nt}$ is what must be added to $x$ so that
+    the linearized optimality condition holds. 
+
+    Again, this suggests that when $x$ is near $x^{*}$, the update $x+\Delta
+    x_{nt}$ should be a very good approximation of $x^{*}$.
 \end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Interpretation III}
 \framesubtitle{Solution of linearized optimality condition}
@@ -161,13 +174,6 @@ $\Delta x_{nt}$ is the difference between the root of $\hat{f'}$ and the point $
 }
 \end{figure}
 \end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%TODO: put first-order approximation a single slide? 
-% with additional analysis maybe
-%\begin{frame}
-%\frametitle{Another Interpretation II}
-%
-%\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Section TWO: Affine Invariance of Newton step
@@ -306,7 +312,8 @@ f(x^{+}) & = f(x-tH^{-1}g) \n \\
 & \le f(x) - tg^TH^{-1}g + \frac{M}{2m}t^2 g^T H^{-1}g \label{tob}\\
 & = f(x) -  \frac{m}{2M} g^T H^{-1}g  &&
     \text{by setting $t=\frac{m}{M}$} \n \\
-    & \le f(x) - \alpha \frac{m}{M} g^T H^{-1}g && (\alpha < \frac{1}{2})
+    & \le f(x) - \alpha \frac{m}{M} g^T H^{-1}g && \text{since }\alpha <
+    \frac{1}{2} \n
 \end{align}
 %Note that\footnote{Recall the definition of square root of a matrix. If A is positive definite then we can write $A=U \Lambda U^T$, where $U$ is unitary and $\Lambda$ is diagonal, and $A^{1/2}=U \Lambda^{1/2} U^T$. },
 Hence, $t = \frac{m}{M}$ satisfies the BTLS exit condition.
