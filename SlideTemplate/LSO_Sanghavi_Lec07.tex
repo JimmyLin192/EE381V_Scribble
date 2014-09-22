@@ -60,46 +60,41 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Section ONE: definition and interpretations of Newton Method
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand{\fgrad}{\ensuremath{\nabla f(x)}}
-\newcommand{\fhess}{\ensuremath{\nabla^2 f(x)}}
-\newcommand{\fhessinv}{\ensuremath{\nabla^2 f(x)^{-1}}}
-\newcommand{\xp}{\ensuremath{x^{+}}}
-\newcommand{\dx}{\ensuremath{\Delta x}}
 \begin{frame}
 \frametitle{Newton Step}
 \begin{definition}
     For $x \in \dom f,$ the vector 
     \be
-    \dx_{nt} = - \fhessinv \fgrad
+    \Delta x_{nt} = - \nabla^2 f(x)^{-1} \nabla f(x)
     \ee
     is called {\it Newton step} for function $f(\cdot)$, at point $x$. 
 \end{definition}
-In terms of positive definiteness of $\fhess$, 
+In terms of positive definiteness of $\nabla^2 f(x)$, 
 \be
-    \fgrad^T \dx_{nt} = -\fgrad^T \fhessinv \fgrad < 0
+    \nabla f(x)^T \Delta x_{nt} = -\nabla f(x)^T \nabla^2 f(x)^{-1} \nabla f(x) < 0
 \ee
-unless $\fgrad = 0$. So the Newton step is a descent direction unless $x$ is
+unless $\nabla f(x) = 0$. So the Newton step is a descent direction unless $x$ is
 already optimal.
 \end{frame}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Interpretation I}
 \framesubtitle{Minimizer of second-order Approximation}
     Second-order Taylor approximation $\hat{f}$ of $f$ at $x$ is
     \be
-    \hat{f}(x+v) = f(x) + \fgrad^T v + \frac{1}{2} v^T \fhess v
+    \hat{f}(x+v) = f(x) + \nabla f(x)^T v + \frac{1}{2} v^T \nabla^2 f(x) v
     \ee
     where RHS is minimized at direction
     \be
-        v = - \fhessinv \fgrad = \dx_{nt} 
+        v = - \nabla^2 f(x)^{-1} \nabla f(x) = \Delta x_{nt} 
     \ee
 Combined with update rule, we have Newton update
     \be 
-    \xp = x - t \fhessinv \fgrad
+    x^{+} = x - t \nabla^2 f(x)^{-1} \nabla f(x)
     \ee
     where $t$ is fixed step size.
 \end{frame}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Interpretation I}
 \framesubtitle{Minimizer of second-order Approximation}
@@ -107,24 +102,24 @@ Combined with update rule, we have Newton update
 \includegraphics[width=2.2in]{figure/minimizer.png}
 \caption{
 The function $f$ (shown solid) and its second-order approximation
-$\hat{f}$ at $x$ (dashed). The Newton step $\dx_{nt}$ is what must be added to $x$ to
+$\hat{f}$ at $x$ (dashed). The Newton step $\Delta x_{nt}$ is what must be added to $x$ to
 give the minimizer of $\hat{f}$.
 }
 \label{fig:1}
 \end{figure}
 \end{frame}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Interpretation II}
 \framesubtitle{Steepest descent direction in Hessian norm}
     Newton step can be interpreted as 
     steepest descent method when the norm is defined as
     \be
-    \| u \|_{\fhess} \triangleq \sqrt{u^T \fhess u}
+    \| u \|_{\nabla^2 f(x)} \triangleq \sqrt{u^T \nabla^2 f(x) u}
     \ee
     %%% TODO: add more comment
 \end{frame}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Interpretation II}
 \framesubtitle{Steepest descent direction in Hessian norm}
@@ -132,26 +127,26 @@ give the minimizer of $\hat{f}$.
 \includegraphics[width=1.3in]{figure/steepest.png}
 \caption{
 The dashed lines are level curves of a convex function. The ellipsoid shown
-(with solid line) is $\{x + v | v^T \fhess v \leq 1\}$. The arrow shows
-$-\fgrad$, the gradient descent direction. The Newton step $\dx_{nt}$ is the
-steepest descent direction in the norm $\|\cdot \|_{\fhess}$.
+(with solid line) is $\{x + v | v^T \nabla^2 f(x) v \leq 1\}$. The arrow shows
+$-\nabla f(x)$, the gradient descent direction. The Newton step $\Delta x_{nt}$ is the
+steepest descent direction in the norm $\|\cdot \|_{\nabla^2 f(x)}$.
 }
 \label{fig:2}
 \end{figure}
 \end{frame}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Interpretation III}
 \framesubtitle{Solution of linearized optimality condition}
     Newton step can also be interpreted as 
-    to linear approximation over gradient $\fgrad$ around $x$.
+    to linear approximation over gradient $\nabla f(x)$ around $x$.
     \be
-        \nabla f(x+v) \approxeq \fgrad + \fhess v
+        \nabla f(x+v) \approxeq \nabla f(x) + \nabla^2 f(x) v
     \ee
     Set RHS to zero gives newton update.
     %%% TODO: add more comment
 \end{frame}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Interpretation III}
 \framesubtitle{Solution of linearized optimality condition}
@@ -162,11 +157,11 @@ steepest descent direction in the norm $\|\cdot \|_{\fhess}$.
 The solid curve is the derivative $f'$ of the function $f$ shown in Figure
 \ref{fig:2}.
 $\hat{f'}$ is the linear approximation of $f'$ at $x$. The Newton step
-$\dx_{nt}$ is the difference between the root of $\hat{f'}$ and the point $x$.
+$\Delta x_{nt}$ is the difference between the root of $\hat{f'}$ and the point $x$.
 }
 \end{figure}
 \end{frame}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %TODO: put first-order approximation a single slide? 
 % with additional analysis maybe
 %\begin{frame}
@@ -177,21 +172,17 @@ $\dx_{nt}$ is the difference between the root of $\hat{f'}$ and the point $x$.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Section TWO: Affine Invariance of Newton step
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand{\yp}{\ensuremath{y^{+}}}
 \newcommand{\gradient}[3]{\ensuremath{\nabla_{#1} #2 (#3)}}
 \newcommand{\hessian}[3]{\ensuremath{\nabla^2_{#1} #2 (#3)}}
-\newcommand{\inv}{^{-1}}
 \begin{frame}
 \frametitle{Affine Invariance of Newton step}
 \begin{lemma}
     Newton step is affine invariant. 
 \end{lemma}
-
-For example, let $g(y) = f(Ay)$, $\yp$ be newton update on function
+For example, let $g(y) = f(Ay)$, $y^{+}$ be newton update on function
 $g(\cdot)$, and 
-$\xp$ be newton update on function $f(\cdot)$. 
-Then if $x=Ay$, we have $\xp = A\yp$.
-
+$x^{+}$ be newton update on function $f(\cdot)$. 
+Then if $x=Ay$, we have $x^{+} = Ay^{+}$.
 \begin{remark}
     Affine Invariance indicates that Newton Method is NOT vulnerable to the
     selection of coordinate system. 
@@ -201,7 +192,7 @@ Then if $x=Ay$, we have $\xp = A\yp$.
     that bad coordinate choice may limit the power of Gradient Descent Method.
 \end{remark}
 \end{frame}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Proof of Affine Invariance}
     Let $x = Ay$ and $g(y) = f(Ay)$, then we have
@@ -209,17 +200,17 @@ Then if $x=Ay$, we have $\xp = A\yp$.
     \hessian{y}{g}{y} &= \hessian{y}{f}{Ay} &= A^T \hessian{x}{f}{x} A \\
     \gradient{y}{g}{y} &= \gradient{y}{f}{Ay} &= A^T \gradient{x}{f}{x}
     \ee
-    Newton update $\yp$ for $g(\cdot)$ can be extended as
+    Newton update $y^{+}$ for $g(\cdot)$ can be extended as
     \be
-    \yp &=& y - t(\hessian{y}{g}{y})\inv \gradient{y}{g}{y} \\
-    &=& y - t(A^T \hessian{x}{f}{x} A)\inv A^T \gradient{x}{f}{x} \\
-    &=& y - t\ A\inv \hessian{x}{f}{x}\inv \gradient{x}{f}{x}
+    y^{+} &=& y - t(\hessian{y}{g}{y})^{-1} \gradient{y}{g}{y} \\
+    &=& y - t(A^T \hessian{x}{f}{x} A)^{-1} A^T \gradient{x}{f}{x} \\
+    &=& y - t\ A^{-1} \hessian{x}{f}{x}^{-1} \gradient{x}{f}{x}
     \ee
     Multiply both sides with affine tranformation $A$, 
     \be
-    A\yp &=& Ay - A \cdot t\ A\inv \hessian{x}{f}{x}\inv \gradient{x}{f}{x} \\
-    &=& x - t\ \hessian{x}{f}{x}\inv \gradient{x}{f}{x} \\
-    &=& \xp
+    Ay^{+} &=& Ay - A \cdot t\ A^{-1} \hessian{x}{f}{x}^{-1} \gradient{x}{f}{x} \\
+    &=& x - t\ \hessian{x}{f}{x}^{-1} \gradient{x}{f}{x} \\
+    &=& x^{+}
     \ee
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -238,9 +229,9 @@ Then if $x=Ay$, we have $\xp = A\yp$.
         \begin{itemize}
             \item Function $f(\cdot)$ is strongly convex, such that
         \be
-        m I \preceq \fhess \preceq M I
+        m I \preceq \nabla^2 f(x) \preceq M I
         \ee
-    \item $\fhess$ is $L$-Lipschitz with constant $L > 0$, such that
+    \item $\nabla^2 f(x)$ is $L$-Lipschitz with constant $L > 0$, such that
         \be
         \| \hessian{}{f}{y} - \hessian{}{f}{x} \|_2 \leq L \|x-y\|_2,\ 
         \forall x,\ y
@@ -259,10 +250,10 @@ Then if $x=Ay$, we have $\xp = A\yp$.
         $\gamma = \frac{\alpha \beta m}{M^2}\eta^2$
         such that Newton Method with BTLS has two phases: 
         \begin{itemize}
-            \item[(a)] Global or Damped Phase: If $\|\fgrad\|_2 \geq \eta$, then 
+            \item[(a)] Global or Damped Phase: If $\|\nabla f(x)\|_2 \geq \eta$, then 
                 \be
-                f(\xp) - f(x) \leq -\gamma, \text{ also } 
-                f(\xp) - f^* \leq c(f(x)-f^*) \label{CA:Theorem:phaseA}
+                f(x^{+}) - f(x) \leq -\gamma, \text{ also } 
+                f(x^{+}) - f^* \leq c(f(x)-f^*) \label{CA:Theorem:phaseA}
                 \ee
         \end{itemize}
     \end{theorem}
@@ -280,11 +271,11 @@ Then if $x=Ay$, we have $\xp = A\yp$.
     \frametitle{Convergence Analysis: Theorem}    
     \begin{theorem}[Part II]
         \begin{itemize}
-            \item[(b)] Local or Quadratic Phase: If $\|\fgrad\|_2 < \eta$,
+            \item[(b)] Local or Quadratic Phase: If $\|\nabla f(x)\|_2 < \eta$,
                 then BTLS will give $t = 1$ and we have
                 \be
-                \frac{L}{2m^2} \|\gradient{}{f}{\xp}\|_2 \leq 
-                    \bigg(\frac{L}{2m^2} \|\fgrad\|_2 \bigg)^2
+                \frac{L}{2m^2} \|\gradient{}{f}{x^{+}}\|_2 \leq 
+                    \bigg(\frac{L}{2m^2} \|\nabla f(x)\|_2 \bigg)^2
                 \ee
         \end{itemize}
     \end{theorem}
@@ -303,8 +294,8 @@ Then if $x=Ay$, we have $\xp = A\yp$.
     \end{lemma}
     Proof omitted because of space.  See p. 489-490 in Boyd.
     \begin{lemma}[Damped Phase]
-        If $\|\fgrad\|_2 \geq \eta$, 
-        then $f(\xp) - f(x) \leq -\gamma$, 
+        If $\|\nabla f(x)\|_2 \geq \eta$, 
+        then $f(x^{+}) - f(x) \leq -\gamma$, 
         where  $\gamma = \frac{\alpha \beta m}{M^2}\eta^2$
     \end{lemma}
 \end{frame}
@@ -333,9 +324,9 @@ Then if $x=Ay$, we have $\xp = A\yp$.
     \end{lemma}
     Proof omitted because of space.  See p. 490-491 in Boyd.
     \begin{lemma}[Quad. Phase]
-        If $\|\fgrad\|_2 < \eta$, then 
-        $ \frac{L}{2m^2} \|\gradient{}{f}{\xp}\|_2 \leq
-                \bigg(\frac{L}{2m^2} \|\fgrad\|_2 \bigg)^2 $
+        If $\|\nabla f(x)\|_2 < \eta$, then 
+        $ \frac{L}{2m^2} \|\gradient{}{f}{x^{+}}\|_2 \leq
+                \bigg(\frac{L}{2m^2} \|\nabla f(x)\|_2 \bigg)^2 $
     \end{lemma}
 
 \end{frame}
