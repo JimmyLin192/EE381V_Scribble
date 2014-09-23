@@ -8,48 +8,60 @@
 %% Specifically,
 %%    ONE: definition and interpretations of Newton step
 %%    TWO: Affine Invariance of Newton step
-%%    THREE: Algorithimic Description of Newton Method
 %%    THREE: Convergence Analysis of Newton Method/step
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Copyright (c), JIMMY, VUTHA, DAVID @ UT AUSTIN 2014
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \documentclass{beamer}
+\usepackage{mathptmx,wrapfig}
+%\usepackage{helvet}
 \mode<presentation>
-\usepackage[latin1]{inputenc}
-\usepackage{hyperref}
-\usepackage{colortbl}
-\usepackage{algorithmic}
-\usepackage{times}
-\usepackage{amssymb}
-\usepackage{amsmath}
+{
+  \usecolortheme{rose}
+  \usecolortheme{dolphin}
+  \setbeamercolor*{author in head/foot}{parent=palette secondary}
+  \setbeamercolor*{title in head/foot}{parent=palette tertiary}
+  \useinnertheme{rectangles}
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{footline}{
+  \leavevmode%
+  \hbox{%
+  \begin{beamercolorbox}[wd=.5\paperwidth,ht=2.25ex,dp=1ex,center]{author in head/foot}%
+    \usebeamerfont{author in head/foot}\insertshortauthor~~\insertshortinstitute
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.5\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+    \usebeamerfont{title in head/foot}\insertshorttitle
+  \end{beamercolorbox}}%
+  \vskip0pt%
+  }
+  \setbeamertemplate{frametitle}[default][center]
+}
+\usepackage[english]{babel}
 \usepackage{epsfig}
-
-\usetheme{juanlespins}
+\usepackage{hyperref}
 \usepackage{graphicx}
-\usepackage{bbm}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{listings}
+%\input{psfig.sty}
+\newcommand{\ip}[2]{\langle #1,#2 \rangle}
+\newtheorem{result}{Result}
 
-\setbeamertemplate{caption}[numbered]
-\setbeamertemplate{navigation symbols}{} 
-\title[Large Scale Optimization, Sanghavi, UT Austin]{EE 381V Large Scale Optimization: Lecture 07}
-\author[Sanghavi]{Prof. Sujay Sanghavi}
-\institute{The University of Texas at Austin\\ Scribes: Jimmy Lin, Vutha Va and David Inouye}
-\date{\today}
-
-\newcommand{\tr}{\text{Tr}}
-\newcommand{\be}{\begin{eqnarray}}
-\newcommand{\ee}{\end{eqnarray}}
-\newcommand{\n}{\nonumber}
-%\newcommand{\qed}{\hfill \blacksquare}
-
-\renewcommand{\textfraction}{0}
-%\renewtheorem{theorem}{Theorem}
-%\newtheorem{lemma}{Lemma}
-%\newtheorem{definition}{Definition}
-\newtheorem{remark}{Remark}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Macros outside the template
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \DeclareMathOperator{\dom}{dom}
-
+\setbeamertemplate{caption}[numbered]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Document informatics
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{Large Scale Optimization: Lecture 7}
+\author{Jimmy Lin, Vutha Va and David Inouye} 
+\institute[]{The University of Texas at Austin} 
+\date{\today}
 \begin{document}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% TITLE PAGE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -64,17 +76,17 @@
 \frametitle{Newton Step}
 \begin{definition}
     For $x \in \dom f,$ the vector 
-    \be
-    \Delta x_{nt} = - \nabla^2 f(x)^{-1} \nabla f(x)
-    \ee
+    \begin{align}
+        \Delta x_{nt} = - \nabla^2 f(x)^{-1} \nabla f(x)
+    \end{align}
     is called {\it Newton step} for function $f(\cdot)$ at point $x$. 
 \end{definition}
     Note that $f(\cdot)$ should be twice differentiable. 
 
 In terms of positive definiteness of $\nabla^2 f(x)$, 
-\be
-    \nabla f(x)^T \Delta x_{nt} = -\nabla f(x)^T \nabla^2 f(x)^{-1} \nabla f(x) < 0
-\ee
+    \begin{align}
+        \nabla f(x)^T \Delta x_{nt} = -\nabla f(x)^T \nabla^2 f(x)^{-1} \nabla f(x) < 0
+    \end{align}
 unless $\nabla f(x) = 0$. So the Newton step is a descent direction unless $x$ is
 already optimal.
 \end{frame}
@@ -83,17 +95,17 @@ already optimal.
 \frametitle{Interpretation I}
 \framesubtitle{Minimizer of second-order Approximation}
     Second-order Taylor approximation $\hat{f}$ of $f$ at $x$ is
-    \be
+    \begin{align}
     \hat{f}(x+v) = f(x) + \nabla f(x)^T v + \frac{1}{2} v^T \nabla^2 f(x) v
-    \ee
+    \end{align}
     where RHS is minimized at direction
-    \be
+    \begin{align}
         v = - \nabla^2 f(x)^{-1} \nabla f(x) = \Delta x_{nt} 
-    \ee
+    \end{align}
 Combined with update rule, we have Newton update
-    \be 
+    \begin{align}
     x^{+} = x - t \nabla^2 f(x)^{-1} \nabla f(x)
-    \ee
+    \end{align}
     where $t$ is fixed step size.
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -101,13 +113,15 @@ Combined with update rule, we have Newton update
 \frametitle{Interpretation I}
 \framesubtitle{Minimizer of second-order Approximation}
 \begin{figure}
-\includegraphics[width=2.2in]{figure/minimizer.png}
+\includegraphics[width=2.2in]{minimizer.png}
 \caption{
 The function $f$ (shown solid) and its second-order approximation
 $\hat{f}$ at $x$ (dashed). The Newton step $\Delta x_{nt}$ is what must be added to $x$ to
 give the minimizer of $\hat{f}$.
 }
 \label{fig:1}
+\footnote{ \tiny
+    Illustration and caption from \textit{Convex Optimization},  Boyd and Vandenberghe, 2004}
 \end{figure}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -116,9 +130,9 @@ give the minimizer of $\hat{f}$.
 \framesubtitle{Steepest descent direction in Hessian norm}
     Newton step can also be interpreted as 
     steepest descent direction when the norm is defined as
-    \be
-    \| u \|_{\nabla^2 f(x)} \triangleq \sqrt{u^T \nabla^2 f(x) u}
-    \ee
+    \begin{align}
+        \| u \|_{\nabla^2 f(x)} \triangleq \sqrt{u^T \nabla^2 f(x) u}
+    \end{align}
     Recall from our discussion over steepest descent method that 
     $ P = \nabla^2 f(x)$ is a very good choice as norm $||\cdot||_P$ inselecting
     steepest descent direction, when $x$ is near $x^{*}$. Around $x^{*}$, we have $\nabla^2
@@ -130,14 +144,16 @@ give the minimizer of $\hat{f}$.
 \frametitle{Interpretation II}
 \framesubtitle{Steepest descent direction in Hessian norm}
 \begin{figure}
-\includegraphics[width=1.3in]{figure/steepest.png}
-\caption{ 
+    \includegraphics[width=1.2in]{steepest.png}
+\caption{ \footnotesize
 The dashed lines are level curves of a convex function. The ellipsoid shown
 (with solid line) is $\{x + v | v^T \nabla^2 f(x) v \leq 1\}$. The arrow shows
 $-\nabla f(x)$, the gradient descent direction. The Newton step $\Delta x_{nt}$ is the
 steepest descent direction in the norm $\|\cdot \|_{\nabla^2 f(x)}$. 
 } 
 \label{fig:2}
+\footnote{ \tiny
+    Illustration and caption from \textit{Convex Optimization},  Boyd and Vandenberghe, 2004}
 \end{figure}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -146,13 +162,13 @@ steepest descent direction in the norm $\|\cdot \|_{\nabla^2 f(x)}$.
 \framesubtitle{Solution of linearized optimality condition}
     Newton step can also be interpreted as 
     to linear approximation over gradient $\nabla f(x)$ around $x$.
-    \be
+    \begin{align}
         \nabla f(x+v) \approx \nabla f(x) + \nabla^2 f(x) v
-    \ee
+    \end{align}
     Set RHS to zero gives Newton step $\Delta x_{nt}$
-    \be
+    \begin{align}
         v = - \nabla^2 f(x)^{-1} \nabla f(x) = \Delta x_{nt} 
-    \ee
+    \end{align}
     %%% TODO: add more comment
     So the Newton step $\Delta x_{nt}$ is what must be added to $x$ so that
     the linearized optimality condition holds. 
@@ -164,7 +180,7 @@ steepest descent direction in the norm $\|\cdot \|_{\nabla^2 f(x)}$.
 \frametitle{Interpretation III}
 \framesubtitle{Solution of linearized optimality condition}
 \begin{figure}
-\includegraphics[width=2.5in]{figure/linear.png}
+\includegraphics[width=2.5in]{linear.png}
 \label{fig:3}
 \caption{
 The solid curve is the derivative $f'$ of the function $f$ shown in Figure
@@ -172,14 +188,14 @@ The solid curve is the derivative $f'$ of the function $f$ shown in Figure
 $\hat{f'}$ is the linear approximation of $f'$ at $x$. The Newton step
 $\Delta x_{nt}$ is the difference between the root of $\hat{f'}$ and the point $x$.
 }
+\footnote{\tiny
+Illustration and caption from \textit{Convex Optimization},  Boyd and Vandenberghe, 2004}
 \end{figure}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Section TWO: Affine Invariance of Newton step
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand{\gradient}[3]{\ensuremath{\nabla_{#1} #2 (#3)}}
-\newcommand{\hessian}[3]{\ensuremath{\nabla^2_{#1} #2 (#3)}}
 \begin{frame}
 \frametitle{Affine Invariance of Newton step}
 \begin{lemma}
@@ -189,35 +205,35 @@ For example, let $g(y) = f(Ay)$, $y^{+}$ be newton update on function
 $g(\cdot)$, and 
 $x^{+}$ be newton update on function $f(\cdot)$. 
 Then if $x=Ay$, we have $x^{+} = Ay^{+}$.
-\begin{remark}
-    Affine Invariance indicates that Newton Method is NOT vulnerable to the
+\begin{result}
+    Affine Invariance indicates that Newton Method is invulnerable to the
     selection of coordinate system. 
-\end{remark}
-\begin{remark}
+\end{result}
+\begin{result}
     Gradient Descent Method is not affine invariant. This means
     that bad coordinate choice may limit the power of Gradient Descent Method.
-\end{remark}
+\end{result}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Proof of Affine Invariance}
+\frametitle{Proof of Affine Invariance of Newton step}
     Let $x = Ay$ and $g(y) = f(Ay)$, then we have
-    \be
-    \hessian{y}{g}{y} &= \hessian{y}{f}{Ay} &= A^T \hessian{x}{f}{x} A \\
-    \gradient{y}{g}{y} &= \gradient{y}{f}{Ay} &= A^T \gradient{x}{f}{x}
-    \ee
+    \begin{align}
+       \nabla^2_{y}g(y) &= \nabla^2_{y}f(Ay) = A^T \nabla^2_{x}f(x) A \\
+       \nabla_{y}g(y)   &= \nabla_{y}f(Ay) = A^T \nabla_{x}f(x)
+    \end{align}
     Newton update $y^{+}$ for $g(\cdot)$ can be extended as
-    \be
-    y^{+} &=& y - t(\hessian{y}{g}{y})^{-1} \gradient{y}{g}{y} \\
-    &=& y - t(A^T \hessian{x}{f}{x} A)^{-1} A^T \gradient{x}{f}{x} \\
-    &=& y - t\ A^{-1} \hessian{x}{f}{x}^{-1} \gradient{x}{f}{x}
-    \ee
+    \begin{align}
+        y^{+} &= y - t(\nabla^2_{y}g(y)^{-1} \nabla_{y}g(y)      \nonumber \\
+        &= y - t(A^T \nabla^2_{x}f(x) A)^{-1} A^T \nabla_{x}f(x) \nonumber \\
+        &= y - t\ A^{-1} \nabla^2_{x}f(x)^{-1} \nabla_{x}f(x)
+    \end{align}
     Multiply both sides with affine tranformation $A$, 
-    \be
-    Ay^{+} &=& Ay - A \cdot t\ A^{-1} \hessian{x}{f}{x}^{-1} \gradient{x}{f}{x} \\
-    &=& x - t\ \hessian{x}{f}{x}^{-1} \gradient{x}{f}{x} \\
-    &=& x^{+}
-    \ee
+    \begin{align}
+        Ay^{+} &= Ay - A \cdot t\ A^{-1} \nabla^2_{x}f(x)^{-1} \nabla_{x}f(x)  \nonumber \\
+        &= x - t\ \nabla^2_{x}f(x)^{-1} \nabla_{x}f(x) \nonumber \\
+        &= x^{+}
+    \end{align}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Section three: Newton Method
@@ -229,18 +245,18 @@ Then if $x=Ay$, we have $x^{+} = Ay^{+}$.
 \begin{frame}
     \frametitle{Convergence Analysis: Assumption}    
         Let $f(\cdot)$ be the function discussed for Convergence of Newton
-        Method. Both of following assumptions are what convergence analysis
-        relies on.
+        Method. Both of following assumptions are what our convergence
+        analysis relies on.
         \begin{itemize}
             \item Function $f(\cdot)$ is strongly convex, such that
-        \be
+    \begin{align}
         m I \preceq \nabla^2 f(x) \preceq M I
-        \ee
-    \item $\nabla^2 f(x)$ is $L$-Lipschitz with constant $L > 0$, such that
-        \be
-        \| \hessian{}{f}{y} - \hessian{}{f}{x} \|_2 \leq L \|x-y\|_2,\ 
+    \end{align}
+\item $\nabla^2 f(x)$ is $L$-Lipschitz with constant $L > 0$, such that
+    \begin{align}
+        \| \nabla^2_{}f(y)  - \nabla^2_{}f(x) \|_2 \leq L \|x-y\|_2,\ 
         \forall x,\ y
-        \ee
+    \end{align}
         Note that induced matrix norm $\| \cdot \|_2$ equals to the largest
         singluar value of inside matrix.
         \end{itemize}
@@ -255,10 +271,10 @@ Then if $x=Ay$, we have $x^{+} = Ay^{+}$.
         such that Newton Method with BTLS has two phases: 
         \begin{itemize}
             \item[(a)] Global or Damped Phase: If $\|\nabla f(x)\|_2 \geq \eta$, then 
-                \be
-                f(x^{+}) - f(x) \leq -\gamma, \text{ also } 
-                f(x^{+}) - f^* \leq c(f(x)-f^*) \label{CA:Theorem:phaseA}
-                \ee
+                \begin{align}
+                    f(x^{+}) - f(x) \leq -\gamma, \text{ also } 
+                    f(x^{+}) - f^* \leq c(f(x)-f^*) \label{CA:Theorem:phaseA}
+                \end{align}
         \end{itemize}
     \end{theorem}
         Inequality \eqref{CA:Theorem:phaseA} has three implications: 
@@ -277,10 +293,10 @@ Then if $x=Ay$, we have $x^{+} = Ay^{+}$.
         \begin{itemize}
             \item[(b)] Local or Quadratic Phase: If $\|\nabla f(x)\|_2 < \eta$,
                 then BTLS will give $t = 1$ and we have
-                \be
-                \frac{L}{2m^2} \|\gradient{}{f}{x^{+}}\|_2 \leq 
+                \begin{align}
+                    \frac{L}{2m^2} \|\nabla_{}f(x^{+})\|_2 \leq 
                     \bigg(\frac{L}{2m^2} \|\nabla f(x)\|_2 \bigg)^2
-                \ee
+                \end{align}
         \end{itemize}
     \end{theorem}
     Implications:
@@ -292,7 +308,12 @@ Then if $x=Ay$, we have $x^{+} = Ay^{+}$.
 
 % TODO: proof of step size t = m/M satisfies the exit condition for BTLS
 \begin{frame}
-    \frametitle{Convergence Analysis: Proof of Part (a)}    
+    \frametitle{Convergence Analysis: Part (a)}    
+    The way we prove convergence in global phase (a) is to employ a particular
+    step size $t$, then show that this particular $t$ will eventually end the
+    loops of BTLS and the desired inequal property holds under the exiting
+    condition of BTLS. 
+    
     \begin{lemma}[BTLS Damped Lemma]
         $t = \frac{m}{M}$ satisfies the exit condition of BTLS.
     \end{lemma}
@@ -305,30 +326,30 @@ Then if $x=Ay$, we have $x^{+} = Ay^{+}$.
 \end{frame}
 
 \begin{frame}
-    \frametitle{Convergence Analysis: BTLS Damped Lemma}    
-\begin{align}
-f(x^{+}) & = f(x-tH^{-1}g) \n \\
-& \le f(x) - tg^TH^{-1}g + \frac{M}{2}t^2g^TH^{-1}H^{-1}g \label{froma} \\
-& \le f(x) - tg^TH^{-1}g + \frac{M}{2m}t^2 g^T H^{-1}g \label{tob}\\
-& = f(x) -  \frac{m}{2M} g^T H^{-1}g  &&
-    \text{by setting $t=\frac{m}{M}$} \n \\
-    & \le f(x) - \alpha \frac{m}{M} g^T H^{-1}g && \text{since }\alpha <
-    \frac{1}{2} \n
-\end{align}
-%Note that\footnote{Recall the definition of square root of a matrix. If A is positive definite then we can write $A=U \Lambda U^T$, where $U$ is unitary and $\Lambda$ is diagonal, and $A^{1/2}=U \Lambda^{1/2} U^T$. },
+    \frametitle{Convergence Analysis: Part (a)}    
+    \framesubtitle{Proof of BTLS Damped Lemma}
+    \begin{align}
+        f(x^{+}) & = f(x-tH^{-1}g) \nonumber \\
+        & \le f(x) - tg^TH^{-1}g + \frac{M}{2}t^2g^TH^{-1}H^{-1}g \label{froma} \\
+        & \le f(x) - tg^TH^{-1}g + \frac{M}{2m}t^2 g^T H^{-1}g \label{tob}\\
+        & = f(x) -  \frac{m}{2M} g^T H^{-1}g  &&
+        \text{by setting $t=\frac{m}{M}$} \nonumber \\
+        & \le f(x) - \alpha \frac{m}{M} g^T H^{-1}g && \text{since }\alpha <
+        \frac{1}{2} \nonumber
+    \end{align}
+    %Note that\footnote{Recall the definition of square root of a matrix. If A is positive definite then we can write $A=U \Lambda U^T$, where $U$ is unitary and $\Lambda$ is diagonal, and $A^{1/2}=U \Lambda^{1/2} U^T$. },
 Hence, $t = \frac{m}{M}$ satisfies the BTLS exit condition.
 
 Note that derivation from \eqref{froma} to \eqref{tob} is given by
-\be
-g^TH^{-1}H^{-1}g = g^TH^{-1/2}H^{-1}H^{-1/2}g \le \frac{1}{m} g^T H^{-1}g \n
-\ee
-
+\begin{align}
+g^TH^{-1}H^{-1}g = g^TH^{-1/2}H^{-1}H^{-1/2}g \le \frac{1}{m} g^T H^{-1}g \nonumber
+\end{align}
 \end{frame}
 
-% TODO: proof of inequality for (a) phase and show linear convergence
-% inequality
+% proof of inequality for (a) phase and show linear convergence inequality
 \begin{frame}
-    \frametitle{Convergence Analysis: Damped Phase Lemma} 
+    \frametitle{Convergence Analysis: Part (a)} 
+    \framesubtitle{Proof of Damped Phase Lemma}
 	\begin{align}
 	t &\leq \beta \frac{m}{M} \tag{BTLS Damped Lemma} \\
 	f(x^+) &\leq f(x) - \alpha\left(\beta \frac{m}{M} \right) g^T H^{-1} g \tag{BTLS condition} \\
@@ -339,25 +360,29 @@ g^TH^{-1}H^{-1}g = g^TH^{-1/2}H^{-1}H^{-1/2}g \le \frac{1}{m} g^T H^{-1}g \n
 	\end{align}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% TODO: proof of inequality for (b) phase
+% proof of inequality for (b) phase
 \begin{frame}
-    \frametitle{Convergence Analysis: Proof Part (b)}
+    \frametitle{Convergence Analysis: Part (b)}
+    Now cast our focus to provide the convergence guarantee when $\|\nabla
+    f(x)\|_2 < \eta$ is the case. Smilarly, we address the proof by dividing
+    it into two separate lemmas.
     \begin{lemma}[BTLS Quad. Lemma]
         With the assumptions in (b), $t = 1$ satisfies the exit condition of BTLS.
     \end{lemma}
-    Proof of BTLS Quad. Lemma will come after the proof of the following Quad.
+    Note that proof of BTLS Quad. Lemma will come after the proof of the Quad.
     Phase Lemma.
     % Proof omitted because of space.  See p. 490-491 in Boyd.
     \begin{lemma}[Quad. Phase Lemma]
         If $\|\nabla f(x)\|_2 < \eta$, then 
-        $ \frac{L}{2m^2} \|\gradient{}{f}{x^{+}}\|_2 \leq
+        $ \frac{L}{2m^2} \|\nabla_{}f(x^{+})\|_2 \leq
                 \bigg(\frac{L}{2m^2} \|\nabla f(x)\|_2 \bigg)^2 $
     \end{lemma}
 
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-    \frametitle{Convergence Analysis: Quad. Phase Lemma}
+    \frametitle{Convergence Analysis: Part (b)}
+    \framesubtitle{Proof of Quad. Phase Lemma}
     \begin{align}
         \text{Let } x^+ &= x - H^{-1}g \tag{BTLS Quad. Lemma} \\
     \| \nabla f(x^{+})\|_2 &= \| \nabla f(x-H^{-1}g) - g + HH^{-1}g \|_2 \tag{Add zero} \\
@@ -369,6 +394,7 @@ g^TH^{-1}H^{-1}g = g^TH^{-1/2}H^{-1}H^{-1/2}g \le \frac{1}{m} g^T H^{-1}g \n
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
     \frametitle{Convergence Analysis: Quad. Phase Lemma}
+    \framesubtitle{Proof of Quad. Phase Lemma}
     \begin{align}
     \| \nabla f(x^{+})\|_2 &\leq \int_{0}^{1} \left\| (\nabla^2 f(x-tH^{-1}g) - H)\right\|_2 \|H^{-1}g\|_2 \mathrm{d}t \notag \\
 	&\leq \int_{0}^{1} L \| \!\!-\!tH^{-1}g \|_2 \|H^{-1}g\|_2 \mathrm{d}t \tag{Liptschitz Continuity of Hessian} \\
@@ -381,19 +407,24 @@ g^TH^{-1}H^{-1}g = g^TH^{-1/2}H^{-1}H^{-1/2}g \le \frac{1}{m} g^T H^{-1}g \n
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-    \frametitle{Convergence Analysis: BTLS Quad. Lemma}
+    \frametitle{Convergence Analysis: Part (b)}
+    \framesubtitle{Proof of BTLS Quad. Lemma}
     Now we show that $t = 1$ satisfies the exit condition of BTLS under the
     assumption of (b).
 
 Setting $t=1$ we have,
-\be
-f(x+\Delta x_{\mathrm{nt}}) & \le& f(x) - \frac{1}{2} \lambda^2(x) + \frac{L}{6 m^{3/2}} \lambda^3(x)
-\\ & =& f(x) - \lambda^2(x) \left(\frac{1}{2}  - \frac{L\lambda(x)}{6 m^{3/2}} \right )
-\\ & =& f(x) + g^T \Delta x_{\mathrm{nt}} \left(\frac{1}{2}  - \frac{L\lambda(x)}{6 m^{3/2}} \right )
-\ee
+\begin{align}
+    f(x+\Delta x_{\mathrm{nt}}) & \le f(x) - \frac{1}{2} \lambda^2(x) + \frac{L}{6 m^{3/2}} \lambda^3(x)
+    \nonumber \\ 
+    & = f(x) - \lambda^2(x) \left(\frac{1}{2}  - \frac{L\lambda(x)}{6 m^{3/2}} \right )
+    \nonumber \\ 
+    & = f(x) + g^T \Delta x_{\mathrm{nt}} \left(\frac{1}{2}  - \frac{L\lambda(x)}{6 m^{3/2}} \right )
+\end{align}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
+    \frametitle{Convergence Analysis: Part (b)}
+    \framesubtitle{Proof of BTLS Quad. Lemma}
 Again using strong convexity, we have
 \begin{align}
 \lambda(x) = (g^T H^{-1} g )^{1/2} \le \frac{1}{m^{1/2}} \|g\|_2 < \frac{1}{m^{1/2}} \eta. 
@@ -401,12 +432,13 @@ Again using strong convexity, we have
 where the last inequality follows from the assumption $\|g\|_2 < \eta $. 
 Hence if we choose $\alpha$ such that,
 \begin{align}
-\alpha & < \frac{1}{2}  - \frac{L\lambda(x)}{6 m^{3/2}} % <  \frac{1}{2}  - \frac{L}{6 m^{3/2}} \frac{1}{m^{1/2}} \|g\|_2
-\\ & < \frac{1}{2}  - \frac{L}{6 m^{2}}  \eta
+\alpha & < \frac{1}{2}  - \frac{L\lambda(x)}{6 m^{3/2}}  \nonumber
+    % <  \frac{1}{2}  - \frac{L}{6 m^{3/2}} \frac{1}{m^{1/2}} \|g\|_2
+     \\ 
+     & < \frac{1}{2}  - \frac{L}{6 m^{2}}  \eta
 \end{align}
 then $t=1$ satisfies BTLS exit condition.
 \end{frame}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{document}
