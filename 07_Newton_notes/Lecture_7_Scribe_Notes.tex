@@ -1,0 +1,356 @@
+% -----------------------------*- LaTeX *------------------------------
+\documentclass[12pt]{report}
+\usepackage{scribe_ee381v_modified}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+%\usepackage{amsthm}
+\newcommand{\set}[1]{\mathcal{#1}}
+\newcommand{\rset}[1]{\mathbb{R}^{#1}}
+
+%\newtheorem{thm}{{\bf Theorem}}
+%\newtheorem{cor}{Corollary}
+%\newtheorem{lem}{Lemma}
+%\newtheorem{prop}{Proposition}
+
+
+%\theoremstyle{remark}
+%\newtheorem{rem}{Remark}
+
+\begin{document}
+
+% \course{CS 497}			% optional
+% \coursetitle{Geometric Data Structures} % optional
+% \semester{Fall 1998}			% optional
+% \lecturer{Jeff Erickson}		% optional
+\scribe{David Inouye, Jimmy Lin, \& Vutha Va}		% required
+\lecturenumber{7}			% required, must be a number
+\lecturedate{September 18}		% required, omit year
+
+\maketitle
+
+% ----------------------------------------------------------------------
+
+%
+%\begin{danger}
+%This is the danger environment.
+%\end{danger}
+
+%\section{My first section heading}
+\section{Recap}
+In the last lecture we studied coordinate descent and steepest descent method. Toward the end of the lecture we looked at an example illustrating that by change of coordinates ($x=Ay$) we could alter the convergence behavior of gradient descent methods. In this lecture we will study Newton's method, which is affine invariant, i.e. the change of coordinates $x=Ay$ does not affect the convergence property as in gradient descent method.
+
+\section{Introduction to Newton's Method}
+\begin{definition}
+For $f$ having positive definite Hessian $\nabla ^2 f(x) \succ 0 $, the Newton updating rule with step size $t$ is defined as,
+\begin{align}
+x^{+} = x + t \Delta x_{\mathrm{nt}} = x - t \, \nabla^2 f(x)^{-1} \nabla f(x),
+\end{align}
+where, $\Delta x_{\mathrm{nt}}$ is called the Newton step. 
+\end{definition}
+Note that since $\nabla^2 f(x) \succ 0$ we have,
+\begin{align*}
+\nabla f(x)^T \Delta x_{\mathrm{nt}} =  - \nabla f(x)^T \nabla^2 f(x)^{-1} \nabla f(x) <0
+\end{align*}
+always holds for $\nabla f(x) \neq 0$, so this is a descent direction.
+
+There are various ways to interpret this choice of updating rule.
+\subsection*{Minimizer of Quadratic Approximation}
+Consider a quadratic approximation of $f$ around $x$,
+\begin{align}
+\tilde{f}(x+v) = f(x) + \nabla f(x)^T v + \frac{1}{2} v^T \nabla^2 f(x) v.
+\end{align}
+This quadratic function is minimized at $v^\star =-\nabla^2 f(x)^{-1} \nabla f(x)$. 
+Note that if $f$ is quadratic, this approximation is exact and $x+v^\star$ is the exact minimizer of $f$. 
+\subsection*{A Special Case of Steepest Descent}
+Newton's method can also be viewed as the steepest descent method with the norm
+\begin{align}
+\| u \|_{\nabla^2 f(x)} \triangleq \sqrt{u^T \nabla^2 f(x) u}.
+\end{align}
+
+\subsection*{Linear Approximation of Gradient around $x$}
+Consider a linear approximation of $\nabla f(x+v)$,
+\begin{align}
+\nabla f(x+v) \simeq \nabla f(x) + \nabla^2 f(x) v.
+\end{align}
+The Newton updating rule is obtained by setting the right hand side to $0$, which is an approximation to the optimality condition $\nabla f(x^\star)=0$.
+
+\subsection*{Affine Invariant Property of the Newton's Method}
+As mentioned earlier, an important feature of the Newton's method is the affine invariant property, i.e. change of coordinates does not alter the convergence behavior as we have seen in the gradient descent methods. We will now state this formally and prove it.
+\begin{lemma}
+The Newton's method is affine invariant, i.e. if we define $g(y)=f(Ay)$ and 
+\begin{itemize}
+\item $y^{+}$ is the Newton update for $g$
+\item $x^{+}$ is the Newton update for $f$
+\end{itemize}
+then if $x=Ay$ we have $x^{+}=Ay^{+}$. 
+\end{lemma}
+
+\begin{proof}
+Let $x=Ay$, then
+\begin{align}
+\nabla^2_y g(y) & = \nabla^2_y f(Ay) = A^T \nabla^2_x f(x) A
+\\ \nabla_y g(y) & = A^T \nabla_x f(x)
+\end{align}
+Substituting these to the Newton updating rule we have,
+\begin{align*}
+y^{+} & = y - t \left(A^T \nabla^2_x f(x) A \right)^{-1} A^T \nabla_x f(x)
+	\\ & = y - t\, A^{-1} \nabla^2_x f(x)^{-1} A^{-T} A^T \nabla_x f(x)
+	\\ & = y - t\, A^{-1} \nabla^2_x f(x)^{-1} \nabla_x f(x)
+\end{align*}
+Multiply both sides by $A$,
+\begin{align*}
+Ay^{+} & = x - t\,  \nabla^2_x f(x)^{-1} \nabla_x f(x) 
+	\\ & = x^{+}. 
+\end{align*}
+\end{proof}
+
+\section{Convergence of Newton's Method}
+We make two major assumptions in this analysis:
+\begin{enumerate}
+    \item $f$ is strongly convex, such that $mI \preceq \nabla^2 f(x) \preceq MI$.
+    \item $\nabla^2 f(x)$ is Lipschitz continuous with constant $L>0$, i.e.
+    \begin{equation}
+        \| \nabla^2 f(x) - \nabla^2 f(y)  \|_2 \leq L \| x - y\|_2 \hspace{15pt} \forall x,y.
+    \end{equation}
+    Note that the norm on the left is the spectral norm, defined as the largest singular value. $L$ can be interpreted as a bound on the third derivative of $f$. The smaller $L$ is, the better $f$ can be approximated by a quadratic function. Since each step of Newton's method minimizes a quadratic approximation of $f$, the performance of Newton's method will be best for functions with small $L$.
+\end{enumerate}
+
+For notational convenience we denote $g=\nabla f(x)$ and $H=\nabla^2 f(x)$ from this point on. 
+
+Our main result of this lecture is Theorem \ref{th:newton_convergence}. We will devote the rest of the lecture trying to understand and prove this theorem. Before stating the theorem, let us first recall Backtracking Line Search (BTLS). With BTLS, first $\alpha$ and $\beta$ are chosen such that $0<\alpha<\frac{1}{2}$ and $0<\beta<1$, starting with $t=1$, repeat
+\begin{align*}
+& {\bf while} \text{ true} \\
+& \hspace{1cm} {\bf if } \,\,\, f(x+t\Delta x)\le f(x)+\alpha t g^T\Delta x \\
+& \hspace{2cm} \text{exit} \\
+& \hspace{1cm} {\bf else }  \\
+& \hspace{2cm} t \leftarrow \beta t \\
+& \hspace{1cm} {\bf end }\\
+& {\bf end }
+\end{align*}
+We are now ready to state and prove the theorem.
+
+\begin{theorem}
+\label{th:newton_convergence}
+There exist $\eta$ and $\gamma$ with $0 < \eta \le \frac{m^2}{L}$ and $\gamma = \alpha \beta \eta^2 \frac{m}{M^2}$ such that Newton's method with BTLS satisfies,
+{
+\renewcommand{\theenumi}{(\alph{enumi})}
+\begin{enumerate} %[(a)]
+\item Damped Newton Phase: If $\|g \|_2 \ge \eta $ then $f(x^{+})-f(x) \le -\gamma$.
+\item Quadratic Phase: If $\|g \|_2 < \eta $ then BTLS $t=1$ and
+\begin{align}
+\label{eq:quad_phase}
+\frac{L}{2m^2} \|\nabla f(x^{+}) \|_2 \le \left( \frac{L}{2m^2} \|\nabla f(x) \|_2 \right)^2.
+\end{align}
+\end{enumerate}
+}
+\end{theorem}
+
+Before proceeding to the proof, let us first interpret the implications of this theorem.
+
+\subsection*{Implication of (a)}
+In the damped Newton phase, $f$ decreases by at least $\gamma$ at each iteration, there the total of iterations in this phase cannot exceed,
+\begin{align*}
+\frac{f(x^{(0)})-p^\star}{\gamma}
+\end{align*}
+since otherwise $f(x)$ would be less than $p^\star$, which contradicts the optimality of $p^\star$. In other words, the quadratic phase will start after $\frac{f(x^{(0)})-p^\star}{\gamma}$ iterations.
+
+\subsection*{Implication of (b)}
+Let $k$ be the first iteration in which $\|g\| < \eta$.  And let $\ell \geq 0$ be the number of iterations after $k$.  For simplicity, let us define:
+\begin{align}
+  a_\ell &= \frac{L}{2m^2} \|\nabla f(x^{(k+\ell - 1)}) \|_2
+\end{align}
+First, let us establish a bound on $a_1$.  In the quadratic phase, since $\|\nabla f(x^{(k)}) \|_2 < \eta$ and $\eta<\frac{m^2}{L}$ by assumption, we have
+\begin{align*}
+\frac{L}{2m^2} \|\nabla f(x^{(k)}) \|_2 < \frac{L}{2m^2} \eta < \frac{1}{2}
+\end{align*}
+Thus, $a_1 < \frac{1}{2}$.  Now from (b) of the theorem, we also have that $a_{\ell+1} \le a_{\ell}^2$.  Therefore, we have the following sequence:
+\begin{align*}
+a_\ell \le (a_{\ell-1})^2 \le (a_{\ell-2})^{2^2} \le (a_{\ell-3})^{2^3}\le \dots \le (a_{1})^{2^{\ell-1}}
+\implies a_\ell \leq (a_{1})^{2^{\ell-1}}
+\end{align*}
+\begin{align*}
+\implies a_\ell &\leq \left(\frac{1}{2}\right)^{2^{\ell-1}}
+\end{align*}
+\begin{align*}
+\implies  \frac{L}{2m^2} \|\nabla f(x^{(\ell)}) \|_2 &\leq \left(\frac{1}{2}\right)^{2^{\ell-1}}\\
+\implies  \|\nabla f(x^{(\ell)}) \|_2 &\leq \frac{2m^2}{L} \left(\frac{1}{2}\right)^{2^{\ell-1}}
+\end{align*}
+
+For strongly convex functions, we also have
+\begin{align}
+f(x^{(\ell)})-p^\star &\le \frac{1}{2m} \|\nabla f(x^{(\ell)}) \|_2^2 \\
+&\leq \frac{1}{2m} \left( \frac{2m^2}{L} \left(\frac{1}{2}\right)^{2^{\ell-1}} \right)^2 \\
+&\leq \frac{2m^3}{L^2} \left(\frac{1}{2}\right)^{2^{\ell-1}}
+\end{align}
+thus, $f(x)\to p^{\star}$ quadratically. 
+
+Therefore, if we want $a_\ell \le \epsilon$, we only need the following number of iterations:
+\begin{align*}
+(a_{1})^{2^{\ell-1}} & \le \epsilon \\
+2^{\ell-1} \log a_{1} & \le \log \epsilon \\
+2^{\ell-1} & \ge \text{constant}\times \log \epsilon \\
+\ell -1 & \ge \log \log \epsilon + \text{constant}.
+\end{align*}
+
+
+\subsection{Convergence Proof}
+For readability of the proof, we will divide the proof into lemmas to emphasize the flow of the proof and not get lost in the details of the derivation. 
+\begin{lemma}
+With the assumptions in part (a), $t = \frac{m}{M}$ satisfies BTLS exit condition, i.e. $f(x+t\Delta x_{\mathrm{nt}}) \le f(x)+\alpha t g^T\Delta x_{\mathrm{nt}}$.
+\label{lem:damped_phase}
+\end{lemma}
+\begin{lemma}
+With the assumptions in part (b), $t=1$ satisfies BTLS exit condition.
+\label{lem:quad_phase}
+\end{lemma}
+Proofs for both Lemmas in Section \ref{sec:lemma-proofs}.
+
+\begin{proof}[Theorem \ref{th:newton_convergence} part (a)]
+Using Lemma \ref{lem:damped_phase}, with $t \geq \beta\frac{m}{M}$ and substituting $\Delta x_{\mathrm{nt}}=-H^{-1}g$, we have
+\begin{align}
+f(x^{+}) \le f(x) - \alpha \beta \frac{m}{M} g^T H^{-1}g 
+\end{align}
+By strong convexity $H\preceq M I$, so $H^{-1}\succeq \frac{1}{M} I $, and we have
+\begin{align}
+g^T H^{-1}g \ge \frac{1}{M}\|g\|_2^2,
+\end{align}
+therefore,
+\begin{align}
+f(x^{+}) & \le f(x) - \alpha \beta \frac{m}{M}\frac{1}{M}\|g\|_2^2 %\le f(x) - \alpha \beta \frac{m}{ M^2} \|g\|_2^2
+\\ f(x^{+}) - f(x) & \le - \underbrace{\alpha \beta \frac{m}{ M^2} \eta^2}_{\gamma}
+\end{align}
+where the last inequality follows because $\|g\|_2\ge \eta$. 
+\end{proof}
+
+\begin{proof}[Theorem \ref{th:newton_convergence} part (b)]
+
+Using Lemma~\ref{lem:quad_phase}, we can set $t=1$. Thus, we have $x^{+}=x-H^{-1}g$ and 
+\begin{align}
+\nabla f(x^{+}) %= \nabla f(x-H^{-1}g) 
+= \nabla f(x-H^{-1}g) - g + HH^{-1}g 
+\end{align}
+Applying the fundamental theorem of calculus to $\nabla f(x-H^{-1}g) - g$ we have\footnote{This point can be easily seen for scalar case. Let $a(t)=\nabla f(x-tH^{-1}g)$, then $a(0)=\nabla f(x)$, $a(1)=\nabla f(x-H^{-1}g)$, and $\int_{0}^{1}\frac{d}{dt}a(t) \mathrm{d}t=a(1)-a(0) $. } 
+\begin{align}
+\nabla f(x-H^{-1}g) - g = \int_{0}^{1} \nabla^2 f(x-tH^{-1}g) (-H^{-1}g) \mathrm{d}t
+\end{align}
+thus,
+\begin{align}
+\nabla f(x^{+}) =  \int_{0}^{1} \left( \nabla^2 f(x-tH^{-1}g) - H \right)(-H^{-1}g) \mathrm{d}t  
+\end{align}
+Taking the norm of both sides,
+\begin{align}
+\|\nabla f(x^{+})\|_2 = \left \| \int_{0}^{1} \left( \nabla^2 f(x-tH^{-1}g) - H \right) (-H^{-1}g) \mathrm{d}t \right \|_2 
+\\ \le \int_{0}^{1} \|\nabla^2 f(x-tH^{-1}g) - H \|_2 \|H^{-1}g \|_2 \mathrm{d}t
+\end{align}
+By Lipschitz continuity of $\nabla^2 f$ we have
+\begin{align}
+  \|\nabla^2 f(x-tH^{-1}g) - H \|_2 \le L \| tH^{-1}g \|_2 = L t \| H^{-1}g \|_2,
+\end{align}
+thus,
+\begin{align}
+\|\nabla f(x^{+})\|_2 \le \int_{0}^{1} L t \|H^{-1}g \|_2^2 \mathrm{d}t= \frac{L}{2} \| H^{-1}g \|_2^2
+\end{align}
+Also, $H\succeq m I$ so $H^{-1}\preceq \frac{1}{m}I$ and,
+\begin{align}
+\| H^{-1}g \|_2^2 \leq \frac{1}{m^2} \|g\|_2^2.
+\end{align}
+Substituting this,
+\begin{align}
+\|\nabla f(x^{+})\|_2 \le \frac{L}{2 m^2} \|g\|_2^2,
+\end{align}
+and multiplying both sides by $\frac{L}{2m^2}$ we obtain the result stated in the theorem.
+\end{proof}
+
+\subsection{Proof of Lemmas}
+\label{sec:lemma-proofs}
+
+\begin{proof}[Lemma \ref{lem:damped_phase}]
+\begin{align}
+f(x^{+}) & = f(x-tH^{-1}g) \\
+	& \le f(x) - tg^TH^{-1}g + \frac{M}{2}t^2g^TH^{-1}H^{-1}g
+\end{align}
+Note that\footnote{Recall the definition of square root of a matrix. If A is positive definite then we can write $A=U \Lambda U^T$, where $U$ is unitary and $\Lambda$ is diagonal, and $A^{1/2}=U \Lambda^{1/2} U^T$. },
+\begin{align}
+g^TH^{-1}H^{-1}g = g^TH^{-1/2}H^{-1}H^{-1/2}g \le \frac{1}{m} g^T H^{-1}g
+\end{align}
+Thus,
+\begin{align}
+f(x^{+}) \le f(x) - tg^TH^{-1}g + \frac{M}{2m}t^2 g^T H^{-1}g
+\end{align}
+Setting $t=\frac{m}{M}$,
+\begin{align}
+f(x^{+}) \le f(x) -  \frac{m}{2M} g^T H^{-1}g
+\end{align}
+This satisfies the exit condition for $t=\frac{m}{M}$, $f(x^{+}) \le f(x) - \alpha \frac{m}{M} g^T H^{-1}g$ since $\alpha<1/2$. 
+%\begin{align}
+%f(x^{+}) \le f(x) - \alpha t g^T H^{-1}g
+%\end{align}
+\end{proof}
+
+\begin{proof}[Lemma \ref{lem:quad_phase}]
+In this proof we will find $\alpha<\frac{1}{2}$ such that $t=1$ satisfies BTLS exit condition. Our goal is to find $\alpha$ such that,
+\begin{align}
+f(x+\Delta x_{\mathrm{nt}}) \le f(x) + \alpha g^T \Delta x_{\mathrm{nt}}.
+\end{align}
+For notational convenience we denote
+\begin{align}
+\lambda(x) = (\Delta x_{\mathrm{nt}}^T H \Delta x_{\mathrm{nt}})^{1/2}= (g^T H^{-1} g )^{1/2}
+\end{align}
+which is known as the Newton decrement at $x$. The second equality follows because $\Delta x_{\mathrm{nt}} = -H^{-1}g $.
+
+By Lipschitz condition for $t\ge 0$,
+\begin{align}
+\|\nabla^2f(x+t \Delta x_{\mathrm{nt}}) - H \|_2 \le t L \|\Delta x_{\mathrm{nt}}\|_2,
+\end{align}
+and we have,
+\begin{align}
+|\Delta x_{\mathrm{nt}}^T (\nabla^2f(x+t \Delta x_{\mathrm{nt}}) - H) \Delta x_{\mathrm{nt}} | \le t L \|\Delta x_{\mathrm{nt}}\|_2^3,
+\end{align}
+Now define $\tilde{f}(t) = f(x+t \Delta x_{\mathrm{nt}})$, then the second derivative with respect to $t$ becomes $\tilde{f}''(t) = \Delta x_{\mathrm{nt}}^T \nabla^2 f(x+t\Delta x_{\mathrm{nt}}) \Delta x_{\mathrm{nt}}$. Substituting $\tilde{f}''$ into the above inequality we have,
+\begin{align}
+|\tilde{f}''(t) - \tilde{f}''(0) | \le t L \|\Delta x_{\mathrm{nt}}\|_2^3,
+\end{align}
+We will use this inequality to find an upper bound on $\tilde{f}(t)$. Starting with \footnote{Note that if $a,b,c > 0$ and $|a-b| \leq c$, then $a \leq b + c$.  Consider if $a \geq b$, then we can remove the absolute value sign.  Suppose $a \leq b$, then we have $a \leq b \leq b+c$ since $c$ is positive.}
+\begin{align}
+\tilde{f}''(t) & \le \tilde{f}''(0) + t L \|\Delta x_{\mathrm{nt}}\|_2^3
+\\ & \le \lambda^2(x) + t \frac{L}{m^{3/2}} \lambda^3(x)
+\label{eq:nd_der_f_tilde}
+\end{align}
+since, $\tilde{f}''(0)=\Delta x_{\mathrm{nt}}^T H \Delta x_{\mathrm{nt}}=\lambda^2(x)$ and from strong convexity, $H\succeq m I$, 
+\begin{align*}
+\lambda^2(x) & = \Delta x_{\mathrm{nt}}^T H \Delta x_{\mathrm{nt}} \ge m \|\Delta x_{\mathrm{nt}} \|_2^2
+\\ \Rightarrow   \|\Delta x_{\mathrm{nt}} \|_2  & \le m^{-1/2} \lambda(x).
+\end{align*}
+Now integrate both sides of \eqref{eq:nd_der_f_tilde} with respect to $t$
+\begin{align*}
+\tilde{f}'(t) & \le \tilde{f}'(0) + t \lambda^2(x) + t^2 \frac{L}{2m^{3/2}} \lambda^3(x)
+\\ & = - \lambda^2(x) + t \lambda^2(x) + t^2 \frac{L}{2m^{3/2}} \lambda^3(x)
+\end{align*} 
+since $\tilde{f}'(0) = \Delta x_{\mathrm{nt}}^T g = -g^TH^{-1}g=- \lambda^2(x) $. Integrating once more,
+\begin{align*}
+\tilde{f}(t) & \le \tilde{f}(0)- t \lambda^2(x) + \frac{t^2}{2} \lambda^2(x) + t^3 \frac{L}{6 m^{3/2}} \lambda^3(x)
+\end{align*} 
+Setting $t=1$ we have,
+\begin{align*}
+f(x+\Delta x_{\mathrm{nt}}) & \le f(x) - \frac{1}{2} \lambda^2(x) + \frac{L}{6 m^{3/2}} \lambda^3(x)
+\\ & = f(x) - \lambda^2(x) \left(\frac{1}{2}  - \frac{L\lambda(x)}{6 m^{3/2}} \right )
+\\ & = f(x) + g^T \Delta x_{\mathrm{nt}} \left(\frac{1}{2}  - \frac{L\lambda(x)}{6 m^{3/2}} \right )
+\end{align*} 
+Again using strong convexity, we have
+\begin{align*}
+\lambda(x) = (g^T H^{-1} g )^{1/2} \le \frac{1}{m^{1/2}} \|g\|_2 < \frac{1}{m^{1/2}} \eta. 
+\end{align*}
+where the last inequality follows from the assumption $\|g\|_2 < \eta $. Hence if we choose $\alpha$ such that,
+\begin{align*}
+\alpha & < \frac{1}{2}  - \frac{L\lambda(x)}{6 m^{3/2}} % <  \frac{1}{2}  - \frac{L}{6 m^{3/2}} \frac{1}{m^{1/2}} \|g\|_2
+\\ & < \frac{1}{2}  - \frac{L}{6 m^{2}}  \eta
+\end{align*}
+then $t=1$ satisfies BTLS exit condition.
+
+\end{proof}
+
+
+\end{document}
+
+
