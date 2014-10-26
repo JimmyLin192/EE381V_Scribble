@@ -1,4 +1,4 @@
-EE381V Scribble
+EE381V Scribes
 ===============
 
 This repository contains the lecture and slides scribes for EE381V held on Fall 2014. 
