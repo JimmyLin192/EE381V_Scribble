@@ -50,17 +50,151 @@
   \titlepage
 \end{frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-  \frametitle{Recap: Topics Covered in the previous lecture}
+  \frametitle{Recap}
+  \begin{itemize}
+      \item Dual of {\it Semi-Definite Programming (SDP)} problems with linear
+objective function are derived as 
+\begin{equation}
+\begin{aligned}
+    &\underset{}{\text{min}} && - \langle G, Z \rangle  \\
+    &\text{ s.t.} && \langle F_i, Z \rangle = c_i,\ \forall i  \\
+       & && z \succeq 0
+\end{aligned}
+\end{equation}
+\item Application of linear SDP optimization:
+\begin{itemize}
+    \item Find a matrix with largest eigenvalue, 
+    \item Find sum of $r$-largest eigenvalues of a given matrix and
+    \item Find sum of singular values of a symmetric but not PSD matrix.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Recap}
+\begin{itemize}
+    \item Study of SDP is then extended to non-linear objective, called
+{\it Log Determinant Optimization}. The general form is as follows:
+\begin{equation}
+\begin{aligned}
+    &\underset{x}{\text{min }} && c^T x - \text{log det } G(x) \\
+    &\text{ s.t.} && G(x) \succeq 0 \\
+    & && F(x) \geq 0
+\end{aligned}
+\end{equation}
+where $- \text{log det } G(x)$ is proven to be convex function. 
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Recap}
+\begin{itemize}
+\item Following problems are formulated as Log Determinant Optimization
+problem:
+\begin{itemize}
+    \item Find the minimal-volume ellipsoid that contains all given points, 
+    \item Find the maximum-volume ellipsoid enclosed within a given polyhedron, 
+    \item Find the most likely parameters that generates a given set of samples
+    \item Find the variance matrix of gaussian channel with maximum capacity.
+\end{itemize}
+\end{itemize}
 
 \end{frame}
 
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Topics Covered by this Lecture}
+\frametitle{Motivations for Proximal Gradient Descent}
+\begin{itemize}
+    \item Motivation 1: Iterative Shrinkage-Thresholding Algorithm (ISTA)
+    \item Motivation 2
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Iterative Shrinkage-Thresholding Algorithm (ISTA)}
+Consider the unconstrained optimization problem with $l_1$ regularization
+\begin{equation}
+\begin{aligned}
+    & \underset{x}{\text{ min }}
+    && \frac{1}{2}\underbrace{|| y - Ax ||_2^2}_{\text{smooth/"nice"}}
+    + \underbrace{  \lambda || x ||_1 }_{\text{not smooth/"nice", but "special"}}
+\end{aligned}
+\end{equation}
+If $A = I$, then
+\begin{equation}
+\begin{aligned}
+    & \underset{x}{\text{ min }} 
+    && \frac{1}{2} || y - x ||_2^2 + \lambda || x ||_1 \\
+    = 
+    & \underset{x}{\text{ min }} 
+    && \sum_i \{ \frac{1}{2} ( y_i - x_i )^2  + \lambda | x_i |_1 \} \\
+\end{aligned}
+\end{equation}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Iterative Shrinkage-Thresholding Algorithm (ISTA)}
+Now we derive closed-form solution for each "separated" problem: 
+\begin{align}
+    x_i-y_i + \lambda & && \text{ if } x_i > 0 \\
+    x_i-y_i - \lambda & && \text{ if } x_i < 0 \\
+    -y_i + r \lambda &, r \in (-1,1) && \text{ if } x_i = 0 
+\end{align}
+Suppose $y_i > 0$, then it obvious that $x_i \geq 0 $. 
+\begin{itemize}
+    \item if $x_i > 0$, then $\exists x_i = y_i - \lambda$.
+    \item if $x_i = 0$, then 
+\end{itemize}
+Similarly, if $y_i < 0$, then exists $x_i = y_i + \lambda$ if $x_i < 0$.
+% TODO: add figure here
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Motivation 2}
+Consider another optimization problem
+\begin{equation}
+\begin{aligned}
+    &  \underset{x}{\text{ min }}
+    && \underbrace{g(x)}_{\text{"nice"}} \\
+    &  \text{ s.t. } 
+    && x \in Q
+\end{aligned}
+\end{equation}
+where $Q$ is a convex set and is easy to project onto, e.g. $Q: \{ x| ||x||_{\infty} \leq 1 \}$. \\
+The above optimization problem equates to 
+\begin{equation}
+\begin{aligned}
+    &  \underset{x}{\text{ min }}
+    && g(x) + I_Q(x) 
+\end{aligned}
+\end{equation}
+where 
+\begin{equation}
+    I_Q (x) = 
+   \begin{cases}
+   0 &\mbox{if } x \in Q  \\
+   \infty &\mbox{if } x \not \in Q
+   \end{cases}
+  \end{equation}
+Hence, we have 
+\begin{equation}
+    [P_Q(y)]_i =
+   \begin{cases}
+   y_i &\mbox{if } |y_i| \leq 1  \\
+   sign(y_i) &\mbox{otherwise} 
+   \end{cases}
+  \end{equation}
 
 \end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}
 \frametitle{Proximal Gradient Algorithm}
