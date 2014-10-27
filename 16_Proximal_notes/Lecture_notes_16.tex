@@ -32,18 +32,131 @@
 % ----------------------------------------------------------------------
 
 \section{Recap}
-Include table of time complexity
+In the last lecture, dual of {\it Semi-Definite Programming (SDP)} problems with linear
+objective function are derived as 
+\begin{equation}
+\begin{aligned}
+    &\underset{}{\text{min}} && - \langle G, Z \rangle  \\
+    &\text{ s.t.} && \langle F_i, Z \rangle = c_i,\ \forall i  \\
+       & && z \succeq 0
+\end{aligned}
+\end{equation}
+Afterwards, it is shown how to formulate following problem as linear SDP
+optimization:
+\begin{itemize}
+    \item find a matrix with largest eigenvalue, 
+    \item find sum of $r$-largest eigenvalues of a given matrix and
+    \item find sum of singular values of a symmetric but not PSD matrix.
+\end{itemize}
+Then study of SDP is then extended to non-linear objective, which is called
+{\it Log Determinant Optimization}. The general form is as follows:
+\begin{equation}
+\begin{aligned}
+    &\underset{x}{\text{min }} && c^T x - \text{log det } G(x) \\
+    &\text{ s.t.} && G(x) \succeq 0 \\
+    & && F(x) \geq 0
+\end{aligned}
+\end{equation}
+where $- \text{log det } G(x)$ is proven to be convex function. \\
+Also, the following problems are formulated as Log Determinant Optimization
+problem:
+\begin{itemize}
+    \item find the minimal-volume ellipsoid that contains all given points, 
+    \item find the maximum-volume ellipsoid enclosed within a given polyhedron, 
+    \item find the most likely parameters that generates a given set of samples
+    \item find the variance matrix of gaussian channel with maximum capacity.
+\end{itemize}
+In this lecture, we will discuss {\it Proximal Gradient Algorithm}. 
+Section \ref{PGA_MOTIVATION} illustrates motivations for the Proximal Gradient Algorithm. 
+Section \ref{PGA_OPERATOR} will provide introduction and definition of
+the Proximal Operator. 
+Section \ref{PGA_ALGORITHM} gives details of the Proximal Gradient Algorithm. 
+Section \ref{PGA_CONVERGENCE} is to touch convergence analysis of the Proximal
+Gradient Algorithm.
 
-\section{Motivation for Proximal Gradient Algorithm}
-blabla
+\section{Motivations} \label{PGA_MOTIVATION}
+As has been seen before, in order to get to $|| x - x^* || \leq \epsilon$, we
+have complexity
+\begin{itemize}
+    \item $\mathcal{O}(\frac{1}{\epsilon})$ for gradient descent method with
+        {\it smooth} objective $f(\cdot)$
 
+    \item $\mathcal{O}(log(\frac{1}{\epsilon}))$ for gradient descent method
+        with {\it strongly convex} objective $f(\cdot)$
+    \item $\mathcal{O}(\frac{1}{\epsilon^2})$ for subgradient descent method
+        with {\it non-smooth} objective $f(\cdot)$
+\end{itemize}
 \subsection{Iterative Shrinkage-Thresholding Algorithm (ISTA)}
-ISTA!!!
+Consider the unconstrained optimization problem with $l_1$ regularization
+\begin{equation}
+\begin{aligned}
+    & \underset{x}{\text{ min }}
+    && \frac{1}{2}\underbrace{|| y - Ax ||_2^2}_{\text{smooth/"nice"}}
+    + \underbrace{  \lambda || x ||_1 }_{\text{not smooth/"nice", but "special"}}
+\end{aligned}
+\end{equation}
+Say if $A = I$, then
+\begin{equation}
+\begin{aligned}
+    & \underset{x}{\text{ min }} 
+    && \frac{1}{2} || y - x ||_2^2 + \lambda || x ||_1 \\
+    = 
+    & \underset{x}{\text{ min }} 
+    && \sum_i \{ \frac{1}{2} ( y_i - x_i )^2  + \lambda | x_i |_1 \} \\
+\end{aligned}
+\end{equation}
+Obviously, such tranformation is justifiable since the original problem is
+separable. \\
+Now we derive closed-form solution for each "separated" problem: 
+\begin{align}
+    x_i-y_i + \lambda & && \text{ if } x_i > 0 \\
+    x_i-y_i - \lambda & && \text{ if } x_i < 0 \\
+    -y_i + r \lambda &, r \in (-1,1) && \text{ if } x_i = 0 
+\end{align}
+Suppose $y_i > 0$, then it obvious that $x_i \geq 0 $. 
+\begin{itemize}
+    \item if $x_i > 0$, then $\exists x_i = y_i - \lambda$.
+    \item if $x_i = 0$, then 
+\end{itemize}
+Similarly, if $y_i < 0$, then exists $x_i = y_i + \lambda$ if $x_i < 0$.
+% TODO: add figure here
 
 \subsection{Motivation 2}
-blabla
-
-\section{Proximal Gradient Algorithm}
+Consider another optimization problem
+\begin{equation}
+\begin{aligned}
+    &  \underset{x}{\text{ min }}
+    && \underbrace{g(x)}_{\text{"nice"}} \\
+    &  \text{ s.t. } 
+    && x \in Q
+\end{aligned}
+\end{equation}
+where $Q$ is a convex set and is easy to project onto, e.g. $Q: \{ x| ||x||_{\infty} \leq 1 \}$. \\
+The above optimization problem equates to 
+\begin{equation}
+\begin{aligned}
+    &  \underset{x}{\text{ min }}
+    && g(x) + I_Q(x) 
+\end{aligned}
+\end{equation}
+where 
+\begin{equation}
+    I_Q (x) = 
+   \begin{cases}
+   0 &\mbox{if } x \in Q  \\
+   \infty &\mbox{if } x \not \in Q
+   \end{cases}
+  \end{equation}
+Hence, we have 
+\begin{equation}
+    [P_Q(y)]_i =
+   \begin{cases}
+   y_i &\mbox{if } |y_i| \leq 1  \\
+   sign(y_i) &\mbox{otherwise} 
+   \end{cases}
+  \end{equation}
+  
+\section{Proximal Operator} \label{PGA_OPERATOR}
 Proximal gradient is an algorithm for unconstrained problems with a cost function which can be expressed sum of two functions.
 \begin{equation}
 \textrm{minimize}~f(x)=g(x)+h(x)
@@ -88,7 +201,7 @@ I_Q (x) =  \begin{cases}
 \end{equation*}
 Third equality comes from the fact that $u\notin Q$ gives infeasible solution $x$ for minimizing the function. And the last equality is the general definition of projection based on the Euclidean distance.
 
-\subsection{Proximal Gradient Algorithm}
+\section{Proximal Gradient Algorithm} \label{PGA_ALGORITHM}
 Now we can introduce a proximal gradient algorithm which uses two black boxes, one outputs $\nabla g(x)$ and the other outputs $\textbf{prox}_{th}(v)$ (Figure \ref{16fig:twoblackboxes}), for the task of minimizing $f(x) = g(x) + h(x)$.
 \begin{figure}[ht]
     \centering
@@ -115,7 +228,7 @@ Last equality comes from the fact that $\| \nabla g(x) \|_2^2$ and $g(x)$ do not
 g(x) + \langle \nabla g(x), u-x \rangle + \frac{1}{2t}\|u-x\|_2^2 
 \end{equation} 
 
-\subsection{Convergence Analysis of Proximal Gradient}
+\section{Convergence Analysis} \label{PGA_CONVERGENCE}
 The convergence of proximal gradient algorithm requires $O(1/\epsilon)$ of iteration. Following theorem specifies the condition and time complexity.
 
 \begin{theorem}\label{16thm:convergence}
