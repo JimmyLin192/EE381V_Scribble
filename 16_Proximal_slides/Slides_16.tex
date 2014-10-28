@@ -141,18 +141,18 @@ If $A = I$, then
 \begin{frame}
 \frametitle{Iterative Shrinkage-Thresholding Algorithm (ISTA)}
 Now we derive closed-form solution for each "separated" problem: 
-\begin{align}
-    x_i-y_i + \lambda & && \text{ if } x_i > 0 \\
-    x_i-y_i - \lambda & && \text{ if } x_i < 0 \\
-    -y_i + r \lambda &, r \in (-1,1) && \text{ if } x_i = 0 
-\end{align}
-Suppose $y_i > 0$, then it obvious that $x_i \geq 0 $. 
+\begin{equation}
+\begin{aligned}
+    x_i-y_i + \lambda =0 & && \text{ if } x_i \geq 0 \\
+    x_i-y_i - \lambda =0 & && \text{ if } x_i < 0
+\end{aligned}
+\end{equation}
+Suppose $|y_i| \leq \lambda$, then $\exists r \in (-1,1)$, such that $-y_i + r \lambda = 0$.  \\
+Otherwise, in the case of $|y_i| > \lambda$, then 
 \begin{itemize}
-    \item if $x_i > 0$, then $\exists x_i = y_i - \lambda$.
-    \item if $x_i = 0$, then 
+    \item if $y_i > 0$, then $\exists x_i = y_i - \lambda$ if $x_i > 0$.
+    \item if $y_i < 0$, then exists $x_i = y_i + \lambda$ if $x_i < 0$. 
 \end{itemize}
-Similarly, if $y_i < 0$, then exists $x_i = y_i + \lambda$ if $x_i < 0$.
-% TODO: add figure here
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

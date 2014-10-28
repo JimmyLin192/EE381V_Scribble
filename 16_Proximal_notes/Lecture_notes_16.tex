@@ -105,23 +105,21 @@ Say if $A = I$, then
     && \sum_i \{ \frac{1}{2} ( y_i - x_i )^2  + \lambda | x_i |_1 \} \\
 \end{aligned}
 \end{equation}
-Obviously, such tranformation is justifiable since the original problem is
-separable. \\
 Now we derive closed-form solution for each "separated" problem: 
-\begin{align}
-    x_i-y_i + \lambda & && \text{ if } x_i > 0 \\
-    x_i-y_i - \lambda & && \text{ if } x_i < 0 \\
-    -y_i + r \lambda &, r \in (-1,1) && \text{ if } x_i = 0 
-\end{align}
-Suppose $y_i > 0$, then it obvious that $x_i \geq 0 $. 
+\begin{equation}
+\begin{aligned}
+    x_i-y_i + \lambda =0 & && \text{ if } x_i \geq 0 \\
+    x_i-y_i - \lambda =0 & && \text{ if } x_i < 0
+\end{aligned}
+\end{equation}
+Suppose $|y_i| \leq \lambda$, then $\exists r \in (-1,1)$, such that $-y_i + r \lambda = 0$.  \\
+Otherwise, in the case of $|y_i| > \lambda$, then 
 \begin{itemize}
-    \item if $x_i > 0$, then $\exists x_i = y_i - \lambda$.
-    \item if $x_i = 0$, then 
+    \item if $y_i > 0$, then $\exists x_i = y_i - \lambda$ if $x_i > 0$.
+    \item if $y_i < 0$, then exists $x_i = y_i + \lambda$ if $x_i < 0$. 
 \end{itemize}
-Similarly, if $y_i < 0$, then exists $x_i = y_i + \lambda$ if $x_i < 0$.
-% TODO: add figure here
 
-\subsection{Motivation 2}
+\subsection{Motivation 2: Projection Problem}
 Consider another optimization problem
 \begin{equation}
 \begin{aligned}
